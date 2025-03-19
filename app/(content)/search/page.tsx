@@ -1,6 +1,5 @@
 import { getServerSupabaseClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
-import { AppShell } from "@/components/app-shell";
 import {
   Card,
   CardContent,
@@ -13,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BookOpen, FileText, HelpCircle, SearchIcon } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default async function SearchPage({
   searchParams,
@@ -42,13 +42,11 @@ export default async function SearchPage({
 
   // Search for content if query is provided
   let searchResults = null;
-  if (searchParams.q) {
+  if (q) {
     const { data } = await supabase
       .from("content")
       .select("*")
-      .or(
-        `title.ilike.%${searchParams.q}%,description.ilike.%${searchParams.q}%`
-      )
+      .or(`title.ilike.%${q}%,description.ilike.%${q}%`)
       .order("created_at", { ascending: false });
 
     searchResults = data;
@@ -63,7 +61,7 @@ export default async function SearchPage({
   const downloadedIds = downloads?.map((d) => d.content_id) || [];
 
   return (
-    <AppShell>
+    <Suspense fallback={<div>Loading...</div>}>
       <div className="space-y-6 max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight animate-fade-in">
@@ -87,7 +85,7 @@ export default async function SearchPage({
               type="search"
               name="q"
               placeholder="Search for content..."
-              defaultValue={searchParams.q || ""}
+              defaultValue={q || ""}
               className="flex-1"
             />
             <Button type="submit" className="flex items-center gap-2">
@@ -160,7 +158,7 @@ export default async function SearchPage({
               <div className="flex flex-col items-center justify-center h-40 text-center">
                 <SearchIcon className="h-10 w-10 text-muted-foreground mb-2" />
                 <p className="text-muted-foreground">
-                  No results found for {searchParams.q}
+                  No results found for {q}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
                   Try different keywords or browse all content
@@ -173,7 +171,7 @@ export default async function SearchPage({
           </div>
         )}
 
-        {!searchParams.q && (
+        {!q && (
           <div
             className="space-y-6 animate-fade-in"
             style={{ animationDelay: "0.3s" }}
@@ -286,6 +284,6 @@ export default async function SearchPage({
           </div>
         )}
       </div>
-    </AppShell>
+    </Suspense>
   );
 }

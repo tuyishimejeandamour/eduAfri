@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getServerSupabaseClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
-import { AppShell } from "@/components/app-shell";
 import {
   Card,
   CardContent,
@@ -24,15 +23,6 @@ export default async function CoursesPage() {
   if (!user) {
     redirect("/auth");
   }
-
-  // Fetch user profile to get language preference
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("language_preference")
-    .eq("id", user.id)
-    .single();
-
-  const language = profile?.language_preference || "English";
 
   // Fetch courses
   const { data: courses } = await supabase
@@ -64,7 +54,7 @@ export default async function CoursesPage() {
   const downloadedIds = downloads?.map((d) => d.content_id) || [];
 
   return (
-    <AppShell>
+    <>
       <div className="space-y-6">
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight animate-fade-in">
@@ -245,6 +235,6 @@ export default async function CoursesPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </AppShell>
+    </>
   );
 }

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useProgress } from "@/hooks/use-progress";
 import { useContent } from "@/hooks/use-content";
-import { AppShell } from "@/components/app-shell";
 import {
   Card,
   CardContent,
@@ -38,18 +37,18 @@ export default function DashboardPage() {
 
   if (!profile || progressLoading || coursesLoading) {
     return (
-      <AppShell>
+      <>
         <div className="flex items-center justify-center h-[60vh]">
           <div className="animate-pulse text-center">
             <p className="text-lg">Loading dashboard...</p>
           </div>
         </div>
-      </AppShell>
+      </>
     );
   }
 
   return (
-    <AppShell>
+    <>
       <div className="space-y-8">
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight animate-fade-in">
@@ -264,6 +263,6 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
-    </AppShell>
+    </>
   );
 }
