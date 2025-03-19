@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import { useOffline } from "@/hooks/use-offline"
-import { Button } from "@/components/ui/button"
-import { RefreshCw } from "lucide-react"
+import { useOffline } from "@/hooks/use-offline";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 export function OfflineDetector() {
-  const { isOnline, isSyncing, pendingActions, retrySync } = useOffline()
+  const { isOnline, isSyncing, pendingActions, retrySync } = useOffline();
 
   // Only show when online but with pending actions
-  if (!isOnline || pendingActions === 0) return null
+  if (!isOnline || pendingActions === 0) return null;
 
   return (
     <div className="fixed top-0 left-0 right-0 z-40 bg-amber-500 transform translate-y-10">
-      <div className="container py-2 px-4 flex items-center justify-between">
+      <div className=" py-2 px-4 flex items-center justify-between">
         <div className="flex items-center gap-2 text-white">
           <span>You have {pendingActions} pending changes to sync</span>
         </div>
@@ -34,6 +34,5 @@ export function OfflineDetector() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
-

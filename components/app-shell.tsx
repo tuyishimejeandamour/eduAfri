@@ -1,17 +1,25 @@
-import type React from "react"
-import Link from "next/link"
-import { Home, BookOpen, Search, Download, User, Menu, ShoppingCart } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { cn } from "@/lib/utils"
-import { OfflineDetector } from "@/components/offline-detector"
-import { AnnouncementBar } from "@/components/announcement-bar"
-import { MegaMenu } from "@/components/mega-menu"
-import { SiteFooter } from "@/components/site-footer"
-import { OfflineBanner } from "@/components/offline-banner"
+import type React from "react";
+import Link from "next/link";
+import {
+  Home,
+  BookOpen,
+  Search,
+  Download,
+  User,
+  Menu,
+  ShoppingCart,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import { OfflineDetector } from "@/components/offline-detector";
+import { AnnouncementBar } from "@/components/announcement-bar";
+import { MegaMenu } from "@/components/mega-menu";
+import { SiteFooter } from "@/components/site-footer";
+import { OfflineBanner } from "@/components/offline-banner";
 
 interface AppShellProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function AppShell({ children }: AppShellProps) {
@@ -22,7 +30,7 @@ export function AppShell({ children }: AppShellProps) {
       <AnnouncementBar />
 
       <header className="sticky top-0 z-40 bg-background border-b">
-        <div className="container flex h-16 items-center justify-between">
+        <div className=" flex h-16 items-center justify-between">
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
@@ -51,7 +59,10 @@ export function AppShell({ children }: AppShellProps) {
           </div>
 
           {/* Logo */}
-          <Link href="/" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Link
+            href="/"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+          >
             <span className="font-bold text-xl">EduAfri</span>
           </Link>
 
@@ -74,37 +85,51 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </header>
 
-      <main className="flex-1 container py-6 animate-fade-in">{children}</main>
+      <main className="flex-1  py-6 animate-fade-in">{children}</main>
 
       <SiteFooter />
     </div>
-  )
+  );
 }
 
 function MobileNav({ className }: { className?: string }) {
   return (
     <nav className={cn("flex items-center justify-between", className)}>
-      <Link href="/dashboard" className="flex flex-col items-center gap-1 text-xs font-medium">
+      <Link
+        href="/dashboard"
+        className="flex flex-col items-center gap-1 text-xs font-medium"
+      >
         <Home className="h-5 w-5" />
         Dashboard
       </Link>
-      <Link href="/courses" className="flex flex-col items-center gap-1 text-xs font-medium">
+      <Link
+        href="/courses"
+        className="flex flex-col items-center gap-1 text-xs font-medium"
+      >
         <BookOpen className="h-5 w-5" />
         Courses
       </Link>
-      <Link href="/search" className="flex flex-col items-center gap-1 text-xs font-medium">
+      <Link
+        href="/search"
+        className="flex flex-col items-center gap-1 text-xs font-medium"
+      >
         <Search className="h-5 w-5" />
         Search
       </Link>
-      <Link href="/downloads" className="flex flex-col items-center gap-1 text-xs font-medium">
+      <Link
+        href="/downloads"
+        className="flex flex-col items-center gap-1 text-xs font-medium"
+      >
         <Download className="h-5 w-5" />
         Downloads
       </Link>
-      <Link href="/profile" className="flex flex-col items-center gap-1 text-xs font-medium">
+      <Link
+        href="/profile"
+        className="flex flex-col items-center gap-1 text-xs font-medium"
+      >
         <User className="h-5 w-5" />
         Profile
       </Link>
     </nav>
-  )
+  );
 }
-

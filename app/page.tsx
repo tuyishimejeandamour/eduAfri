@@ -31,10 +31,10 @@ const featuredCourses = [
 
 export default function Home() {
   return (
-    <>
+    <div className="flex max-w-7xl flex-col items-center justify-center w-full h-full">
       <OfflineBanner />
-      <section className="relative min-h-[80vh] bg-[#E6E8F5] overflow-hidden">
-        <div className="container relative z-10 flex min-h-[80vh] items-center">
+      <section className="relative rounded-lg  w-full  bg-[#E6E8F5] overflow-hidden">
+        <div className=" relative py-6  px-6 z-10 flex  items-center">
           <div className="grid gap-8 lg:grid-cols-2">
             <div className="flex flex-col justify-center space-y-6">
               <div className="space-y-2">
@@ -104,7 +104,7 @@ export default function Home() {
       </section>
 
       <section className="py-20">
-        <div className="container">
+        <div className="">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold tracking-tight">
               Featured Courses
@@ -129,6 +129,6 @@ export default function Home() {
       </section>
       {/* Render the NewsletterForm client-side only */}
       <NewsletterForm />
-    </>
+    </div>
   );
 }

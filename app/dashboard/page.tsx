@@ -92,7 +92,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {progress?.filter((p) => p.completed).length || 0}
+                {progress?.filter((p: any) => p.completed).length || 0}
               </div>
               <p className="text-xs text-muted-foreground">Completed courses</p>
             </CardContent>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
               {progress && progress.length > 0 ? (
-                progress.map((item) => (
+                progress.map((item: any) => (
                   <div
                     key={item.id}
                     className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 rounded-md border p-3 sm:p-4"
@@ -217,7 +217,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4 px-4 sm:px-6">
               {recommendedCourses && recommendedCourses.length > 0 ? (
-                recommendedCourses.map((item) => (
+                recommendedCourses.map((item: any) => (
                   <div
                     key={item.id}
                     className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 rounded-md border p-3 sm:p-4 content-card"
