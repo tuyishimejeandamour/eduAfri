@@ -84,7 +84,9 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       </header>
 
-      <main className="flex-1  py-6 animate-fade-in">{children}</main>
+      <main className="flex-1 max-w-7xl mx-auto  py-6 animate-fade-in">
+        {children}
+      </main>
 
       <SiteFooter />
     </div>

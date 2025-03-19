@@ -1,18 +1,16 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-const shopLinks = [
-  { title: "Shop all", href: "/courses" },
+const courseCategories = [
+  { title: "courses ", href: "/courses" },
   { title: "New arrivals", href: "/courses?sort=new" },
-  { title: "Bestsellers", href: "/courses?sort=popular" },
+  { title: "Best Courses", href: "/courses?sort=popular" },
   { title: "Bundles", href: "/courses?type=bundle" },
-  { title: "Sale", href: "/courses?on_sale=true" },
 ];
 
-const productLinks = [
+const courseLinks = [
   { title: "Mathematics", href: "/courses?subject=mathematics" },
   { title: "Science", href: "/courses?subject=science" },
   { title: "History", href: "/courses?subject=history" },
@@ -44,7 +42,7 @@ export function MegaMenu() {
             <div>
               <h3 className="font-semibold mb-4">Shop by</h3>
               <ul className="space-y-2">
-                {shopLinks.map((link) => (
+                {courseCategories.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
@@ -59,7 +57,7 @@ export function MegaMenu() {
             <div>
               <h3 className="font-semibold mb-4">Subjects</h3>
               <ul className="space-y-2">
-                {productLinks.map((link) => (
+                {courseLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}

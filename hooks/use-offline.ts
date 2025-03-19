@@ -1,23 +1,33 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { processActionQueue, retryFailedActions } from "@/lib/sync-service";
 import { getPendingActions } from "@/lib/indexeddb";
-import { useToast } from "./use-toast";
+import { toast } from "sonner";
 
+// Safe client-side only hook
 export function useOffline() {
-  const [isOnline, setIsOnline] = useState<boolean>(() => {
-    if (typeof navigator === "undefined") return true;
-    return navigator.onLine;
-  });
-  const [isSyncing, setIsSyncing] = useState<boolean>(false);
-  const [pendingActions, setPendingActions] = useState<number>(0);
-  const { toast } = useToast();
+  const isBrowser = typeof window !== "undefined";
 
-  // Check for pending actions on mount
+  const [isOnline, setIsOnline] = useState(isBrowser ? navigator.onLine : true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [pendingActions, setPendingActions] = useState(0);
+
+  const isMounted = useRef(true);
+
   useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  // Check for pending actions on mount - only in browser
+  useEffect(() => {
+    if (!isBrowser) return;
+
     const checkPendingActions = async () => {
       try {
+        if (!isMounted.current) return;
         const actions = await getPendingActions();
         setPendingActions(actions.length);
       } catch (error) {
@@ -26,26 +36,110 @@ export function useOffline() {
     };
 
     checkPendingActions();
-  }, []);
+  }, [isBrowser]);
 
-  // Update online status
+  // Function to sync data when back online
+  const syncData = useCallback(async () => {
+    if (!isBrowser || !isOnline || !isMounted.current) return;
+
+    setIsSyncing(true);
+    try {
+      const result = await processActionQueue();
+
+      if (!isMounted.current) return;
+
+      if (result.success > 0) {
+        toast.success("Sync complete", {
+          description: `Successfully synced ${result.success} actions.`,
+        });
+      }
+
+      if (result.failed > 0) {
+        toast.error("Some actions failed to sync", {
+          description: `${result.failed} actions couldn't be synced. They will be retried later.`,
+        });
+        setPendingActions(result.failed);
+      } else {
+        setPendingActions(0);
+      }
+    } catch (error) {
+      if (!isMounted.current) return;
+      console.error("Error syncing data:", error);
+      toast.error("Sync failed", {
+        description:
+          "There was an error syncing your data. Please try again later.",
+      });
+    } finally {
+      if (isMounted.current) {
+        setIsSyncing(false);
+      }
+    }
+  }, [isBrowser, isOnline]);
+
+  // Function to manually retry failed actions
+  const retrySync = useCallback(async () => {
+    if (!isBrowser || !isMounted.current) return;
+
+    if (!isOnline) {
+      toast.error("You're offline", {
+        description: "Please connect to the internet to sync your data.",
+      });
+      return;
+    }
+
+    setIsSyncing(true);
+    try {
+      const result = await retryFailedActions();
+
+      if (!isMounted.current) return;
+
+      if (result.success > 0) {
+        toast.success("Retry complete", {
+          description: `Successfully synced ${result.success} actions.`,
+        });
+      }
+
+      if (result.failed > 0) {
+        toast.error("Some actions still failed", {
+          description: `${result.failed} actions couldn't be synced.`,
+        });
+        setPendingActions(result.failed);
+      } else {
+        setPendingActions(0);
+      }
+    } catch (error) {
+      if (!isMounted.current) return;
+      console.error("Error retrying sync:", error);
+      toast.error("Retry failed", {
+        description:
+          "There was an error retrying the sync. Please try again later.",
+      });
+    } finally {
+      if (isMounted.current) {
+        setIsSyncing(false);
+      }
+    }
+  }, [isBrowser, isOnline]);
+
+  // Update online status - only in browser
   useEffect(() => {
+    if (!isBrowser) return;
+
     const handleOnline = () => {
+      if (!isMounted.current) return;
       setIsOnline(true);
-      toast({
-        title: "You're back online",
+      toast.success("You're back online", {
         description: "Syncing your changes...",
       });
       syncData();
     };
 
     const handleOffline = () => {
+      if (!isMounted.current) return;
       setIsOnline(false);
-      toast({
-        title: "You're offline",
+      toast.error("You're offline", {
         description:
           "Changes will be saved locally and synced when you're back online.",
-        variant: "destructive",
       });
     };
 
@@ -56,90 +150,18 @@ export function useOffline() {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
-  }, [toast]);
+  }, [isBrowser, syncData]);
 
-  // Function to sync data when back online
-  const syncData = useCallback(async () => {
-    if (!isOnline) return;
-
-    setIsSyncing(true);
-    try {
-      const result = await processActionQueue();
-
-      if (result.success > 0) {
-        toast({
-          title: "Sync complete",
-          description: `Successfully synced ${result.success} actions.`,
-        });
-      }
-
-      if (result.failed > 0) {
-        toast({
-          title: "Some actions failed to sync",
-          description: `${result.failed} actions couldn't be synced. They will be retried later.`,
-          variant: "destructive",
-        });
-        setPendingActions(result.failed);
-      } else {
-        setPendingActions(0);
-      }
-    } catch (error) {
-      console.error("Error syncing data:", error);
-      toast({
-        title: "Sync failed",
-        description:
-          "There was an error syncing your data. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSyncing(false);
-    }
-  }, [isOnline, toast]);
-
-  // Function to manually retry failed actions
-  const retrySync = useCallback(async () => {
-    if (!isOnline) {
-      toast({
-        title: "You're offline",
-        description: "Please connect to the internet to sync your data.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSyncing(true);
-    try {
-      const result = await retryFailedActions();
-
-      if (result.success > 0) {
-        toast({
-          title: "Retry complete",
-          description: `Successfully synced ${result.success} actions.`,
-        });
-      }
-
-      if (result.failed > 0) {
-        toast({
-          title: "Some actions still failed",
-          description: `${result.failed} actions couldn't be synced.`,
-          variant: "destructive",
-        });
-        setPendingActions(result.failed);
-      } else {
-        setPendingActions(0);
-      }
-    } catch (error) {
-      console.error("Error retrying sync:", error);
-      toast({
-        title: "Retry failed",
-        description:
-          "There was an error retrying the sync. Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSyncing(false);
-    }
-  }, [isOnline, toast]);
+  // If not in browser, return safe defaults
+  if (!isBrowser) {
+    return {
+      isOnline: true,
+      isSyncing: false,
+      pendingActions: 0,
+      syncData: () => Promise.resolve(),
+      retrySync: () => Promise.resolve(),
+    };
+  }
 
   return {
     isOnline,
