@@ -1,32 +1,44 @@
-import Link from "next/link"
-import { getServerSupabaseClient } from "@/lib/supabase"
-import { redirect } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, FileText, HelpCircle, ArrowLeft } from "lucide-react"
+import Link from "next/link";
+import { getServerSupabaseClient } from "@/lib/supabase";
+import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, FileText, HelpCircle, ArrowLeft } from "lucide-react";
 
-export default async function CourseDetailPage({ params }: { params: { id: string } }) {
-  const supabase = await getServerSupabaseClient()
+export default async function CourseDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
   if (!user) {
-    redirect("/auth")
+    redirect("/auth");
   }
 
   // Fetch the course
   const { data: course, error: courseError } = await supabase
     .from("content")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("type", "course")
-    .single()
+    .single();
 
   if (courseError || !course) {
-    redirect("/dashboard")
+    redirect("/dashboard");
   }
 
   // Fetch lessons for this course
@@ -34,11 +46,11 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
     .from("content")
     .select("*")
     .eq("type", "lesson")
-    .eq("course_id", params.id)
-    .order("order_in_course", { ascending: true })
+    .eq("course_id", id)
+    .order("order_in_course", { ascending: true });
 
   if (lessonsError) {
-    console.error("Error fetching lessons:", lessonsError)
+    console.error("Error fetching lessons:", lessonsError);
   }
 
   // Fetch quizzes for this course
@@ -46,11 +58,11 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
     .from("content")
     .select("*")
     .eq("type", "quiz")
-    .eq("course_id", params.id)
-    .order("created_at", { ascending: false })
+    .eq("course_id", id)
+    .order("created_at", { ascending: false });
 
   if (quizzesError) {
-    console.error("Error fetching quizzes:", quizzesError)
+    console.error("Error fetching quizzes:", quizzesError);
   }
 
   return (
@@ -83,12 +95,12 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
           </TabsList>
 
           <div className="flex gap-2">
-            <Link href={`/dashboard/courses/${params.id}/lessons/create`}>
+            <Link href={`/dashboard/courses/${id}/lessons/create`}>
               <Button variant="outline" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" /> Add Lesson
               </Button>
             </Link>
-            <Link href={`/dashboard/courses/${params.id}/quizzes/create`}>
+            <Link href={`/dashboard/courses/${id}/quizzes/create`}>
               <Button variant="outline" className="flex items-center gap-2">
                 <Plus className="h-4 w-4" /> Add Quiz
               </Button>
@@ -110,10 +122,15 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow">
-                    <p className="text-sm text-muted-foreground line-clamp-3">{lesson.description}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {lesson.description}
+                    </p>
                   </CardContent>
                   <CardFooter>
-                    <Link href={`/dashboard/courses/${params.id}/lessons/${lesson.id}/edit`} className="w-full">
+                    <Link
+                      href={`/dashboard/courses/${id}/lessons/${lesson.id}/edit`}
+                      className="w-full"
+                    >
                       <Button variant="outline" className="w-full">
                         Edit Lesson
                       </Button>
@@ -125,8 +142,10 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
               <div className="col-span-full flex flex-col items-center justify-center py-12">
                 <FileText className="h-16 w-16 text-muted-foreground mb-4" />
                 <p className="text-xl font-medium mb-2">No lessons yet</p>
-                <p className="text-muted-foreground mb-6">Add your first lesson to get started</p>
-                <Link href={`/dashboard/courses/${params.id}/lessons/create`}>
+                <p className="text-muted-foreground mb-6">
+                  Add your first lesson to get started
+                </p>
+                <Link href={`/dashboard/courses/${id}/lessons/create`}>
                   <Button>Add Lesson</Button>
                 </Link>
               </div>
@@ -144,10 +163,15 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
                     <CardDescription>{quiz.language}</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-grow">
-                    <p className="text-sm text-muted-foreground line-clamp-3">{quiz.description}</p>
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {quiz.description}
+                    </p>
                   </CardContent>
                   <CardFooter>
-                    <Link href={`/dashboard/courses/${params.id}/quizzes/${quiz.id}/edit`} className="w-full">
+                    <Link
+                      href={`/dashboard/courses/${id}/quizzes/${quiz.id}/edit`}
+                      className="w-full"
+                    >
                       <Button variant="outline" className="w-full">
                         Edit Quiz
                       </Button>
@@ -159,8 +183,10 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
               <div className="col-span-full flex flex-col items-center justify-center py-12">
                 <HelpCircle className="h-16 w-16 text-muted-foreground mb-4" />
                 <p className="text-xl font-medium mb-2">No quizzes yet</p>
-                <p className="text-muted-foreground mb-6">Add your first quiz to get started</p>
-                <Link href={`/dashboard/courses/${params.id}/quizzes/create`}>
+                <p className="text-muted-foreground mb-6">
+                  Add your first quiz to get started
+                </p>
+                <Link href={`/dashboard/courses/${id}/quizzes/create`}>
                   <Button>Add Quiz</Button>
                 </Link>
               </div>
@@ -169,6 +195,5 @@ export default async function CourseDetailPage({ params }: { params: { id: strin
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

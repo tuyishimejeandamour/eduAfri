@@ -1,18 +1,32 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { createCourse, updateCourse } from "@/app/admin/actions"
-import { Loader2 } from "lucide-react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { createCourse, updateCourse } from "@/app/admin/actions";
+import { Loader2 } from "lucide-react";
 
 // Define the form schema
 const courseFormSchema = z.object({
@@ -21,18 +35,18 @@ const courseFormSchema = z.object({
   subject: z.string().min(1, "Subject is required"),
   grade_level: z.string().min(1, "Grade level is required"),
   language: z.string().min(1, "Language is required"),
-})
+});
 
-type CourseFormValues = z.infer<typeof courseFormSchema>
+type CourseFormValues = z.infer<typeof courseFormSchema>;
 
 interface CourseFormProps {
-  course?: any
-  languages: { code: string; name: string }[]
+  course?: any;
+  languages: { code: string; name: string }[];
 }
 
 export function CourseForm({ course, languages }: CourseFormProps) {
-  const router = useRouter()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Default values for the form
   const defaultValues: Partial<CourseFormValues> = {
@@ -41,15 +55,15 @@ export function CourseForm({ course, languages }: CourseFormProps) {
     subject: course?.subject || "",
     grade_level: course?.grade_level || "",
     language: course?.language || "en",
-  }
+  };
 
   const form = useForm<CourseFormValues>({
     resolver: zodResolver(courseFormSchema),
     defaultValues,
-  })
+  });
 
   async function onSubmit(data: CourseFormValues) {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       if (course) {
@@ -57,33 +71,33 @@ export function CourseForm({ course, languages }: CourseFormProps) {
         const result = await updateCourse({
           id: course.id,
           ...data,
-        })
+        });
 
         if (result.error) {
-          throw new Error(result.error)
+          throw new Error(result.error);
         }
 
-        router.push("/admin/courses")
-        router.refresh()
+        router.push("/admin/courses");
+        router.refresh();
       } else {
         // Create new course
         const result = await createCourse({
           ...data,
           type: "course",
-        })
+        });
 
         if (result.error) {
-          throw new Error(result.error)
+          throw new Error(result.error);
         }
 
-        router.push("/admin/courses")
-        router.refresh()
+        router.push("/admin/courses");
+        router.refresh();
       }
     } catch (error) {
-      console.error("Error submitting form:", error)
+      console.error("Error submitting form:", error);
       // Handle error (could add toast notification here)
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
@@ -92,6 +106,9 @@ export function CourseForm({ course, languages }: CourseFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-6 pt-6">
+            <p>
+              Please enter the course title &quot;correctly&quot; to continue.
+            </p>
             <FormField
               control={form.control}
               name="title"
@@ -99,9 +116,14 @@ export function CourseForm({ course, languages }: CourseFormProps) {
                 <FormItem>
                   <FormLabel>Course Title</FormLabel>
                   <FormControl>
-                    <Input placeholder="Introduction to Mathematics" {...field} />
+                    <Input
+                      placeholder="Introduction to Mathematics"
+                      {...field}
+                    />
                   </FormControl>
-                  <FormDescription>The name of your course as it will appear to students.</FormDescription>
+                  <FormDescription>
+                    The name of your course as it will appear to students.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -120,7 +142,9 @@ export function CourseForm({ course, languages }: CourseFormProps) {
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>Provide a detailed description of what students will learn.</FormDescription>
+                  <FormDescription>
+                    Provide a detailed description of what students will learn.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -136,7 +160,9 @@ export function CourseForm({ course, languages }: CourseFormProps) {
                     <FormControl>
                       <Input placeholder="Mathematics" {...field} />
                     </FormControl>
-                    <FormDescription>The main subject area of the course.</FormDescription>
+                    <FormDescription>
+                      The main subject area of the course.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -151,7 +177,10 @@ export function CourseForm({ course, languages }: CourseFormProps) {
                     <FormControl>
                       <Input placeholder="5-8" {...field} />
                     </FormControl>
-                    <FormDescription>The target grade level (e.g., "5-8", "Secondary").</FormDescription>
+                    <FormDescription>
+                      The target grade level (e.g., &quot;5-8&quot;,
+                      &quot;Secondary&quot;).
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -164,7 +193,10 @@ export function CourseForm({ course, languages }: CourseFormProps) {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Language</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a language" />
@@ -178,7 +210,9 @@ export function CourseForm({ course, languages }: CourseFormProps) {
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormDescription>The primary language of the course content.</FormDescription>
+                  <FormDescription>
+                    The primary language of the course content.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -195,13 +229,14 @@ export function CourseForm({ course, languages }: CourseFormProps) {
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               {course ? "Update Course" : "Create Course"}
             </Button>
           </CardFooter>
         </form>
       </Form>
     </Card>
-  )
+  );
 }
-

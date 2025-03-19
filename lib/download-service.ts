@@ -1,56 +1,65 @@
-"use client"
+"use client";
 
-import { saveContent, saveDownload, getContent, getDownloadByContentId, queueAction } from "./indexeddb"
+import {
+  saveContent,
+  saveDownload,
+  getContent,
+  getDownloadByContentId,
+  queueAction,
+} from "./indexeddb";
 
 // Function to download content and store it in IndexedDB
-export async function downloadContent(contentId: string, userId: string): Promise<boolean> {
+export async function downloadContent(
+  contentId: string,
+  userId: string
+): Promise<boolean> {
   try {
     // First check if we already have this content downloaded
-    const existingDownload = await getDownloadByContentId(contentId)
+    const existingDownload = await getDownloadByContentId(contentId);
     if (existingDownload) {
-      console.log("Content already downloaded:", contentId)
-      return true
+      console.log("Content already downloaded:", contentId);
+      return true;
     }
 
     // Fetch the content details
-    const contentResponse = await fetch(`/api/content/${contentId}`)
+    const contentResponse = await fetch(`/api/content/${contentId}`);
     if (!contentResponse.ok) {
-      throw new Error("Failed to fetch content")
+      throw new Error("Failed to fetch content");
     }
 
-    const contentData = await contentResponse.json()
-    const { content, lessons, questions } = contentData.data
+    const contentData = await contentResponse.json();
+    const { content, lessons, questions } = contentData.data;
 
     // Save the main content
-    await saveContent(content)
+    await saveContent(content);
 
     // Save related content (lessons or questions)
     if (lessons && lessons.length > 0) {
       for (const lesson of lessons) {
-        await saveContent(lesson)
+        await saveContent(lesson);
       }
     }
 
     if (questions && questions.length > 0) {
       // Save questions as part of the content object
-      content.questions = questions
-      await saveContent(content)
+      content.questions = questions;
+      await saveContent(content);
     }
 
     // Calculate size (simplified)
-    let sizeBytes = 0
+    let sizeBytes = 0;
     switch (content.type) {
       case "course":
-        sizeBytes = 5 * 1024 * 1024 // 5 MB
-        break
+        sizeBytes = 5 * 1024 * 1024; // 5 MB
+        break;
       case "lesson":
-        sizeBytes = 2 * 1024 * 1024 // 2 MB
-        break
+        sizeBytes = 2 * 1024 * 1024; // 2 MB
+        break;
       case "quiz":
-        sizeBytes = 1 * 1024 * 1024 // 1 MB
-        break
+        sizeBytes = 1 * 1024 * 1024; // 1 MB
+        break;
       default:
-        sizeBytes = 1 * 1024 * 1024 // 1 MB
+        sizeBytes = 1 * 1024 * 1024; // 1 MB
     }
 
     // Record the download in IndexedDB
@@ -61,9 +70,9 @@ export async function downloadContent(contentId: string, userId: string): Promis
       downloaded_at: new Date().toISOString(),
       size_bytes: sizeBytes,
       content: content, // Include the content for offline access
-    }
+    };
 
-    await saveDownload(download)
+    await saveDownload(download);
 
     // Try to record the download on the server
     try {
@@ -73,7 +82,7 @@ export async function downloadContent(contentId: string, userId: string): Promis
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ contentId, sizeBytes }),
-      })
+      });
 
       if (!response.ok) {
         // If server request fails, queue it for later
@@ -82,40 +91,42 @@ export async function downloadContent(contentId: string, userId: string): Promis
           method: "POST",
           body: { contentId, sizeBytes },
           headers: { "Content-Type": "application/json" },
-        })
+        });
       }
-    } catch (error) {
+    } catch (_error) {
+      console.error("Failed to record download on server:", _error);
       // If offline, queue the action for later
       await queueAction({
         url: "/api/downloads",
         method: "POST",
         body: { contentId, sizeBytes },
         headers: { "Content-Type": "application/json" },
-      })
+      });
     }
 
-    return true
+    return true;
   } catch (error) {
-    console.error("Error downloading content:", error)
-    return false
+    console.error("Error downloading content:", error);
+    return false;
   }
 }
 
 // Function to get downloaded content from IndexedDB
-export async function getDownloadedContent(contentId: string): Promise<any | null> {
+export async function getDownloadedContent(
+  contentId: string
+): Promise<any | null> {
   try {
     // First check if we have this content downloaded
-    const download = await getDownloadByContentId(contentId)
+    const download = await getDownloadByContentId(contentId);
     if (!download) {
-      return null
+      return null;
     }
 
     // Get the content from IndexedDB
-    const content = await getContent(contentId)
-    return content
+    const content = await getContent(contentId);
+    return content;
   } catch (error) {
-    console.error("Error getting downloaded content:", error)
-    return null
+    console.error("Error getting downloaded content:", error);
+    return null;
   }
 }
-

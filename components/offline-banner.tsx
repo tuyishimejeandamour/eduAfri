@@ -27,13 +27,13 @@ const OfflineBannerContent = ({
           {isOnline ? (
             <>
               <Wifi className="h-4 w-4" />
-              <span>You're back online</span>
+              <span>You&apos;re back online</span>
             </>
           ) : (
             <>
               <WifiOff className="h-4 w-4" />
               <span>
-                You're currently offline. Some features may be limited.
+                You&apos;re currently offline. Some features may be limited.
               </span>
             </>
           )}

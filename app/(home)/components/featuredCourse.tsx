@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 
 const FeaturedCourses = () => {
   const courses = [
@@ -43,10 +44,11 @@ const FeaturedCourses = () => {
               <Link href={`/courses/${course.id}`}>
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
                   <div className="aspect-video relative">
-                    <img
+                    <Image
                       src={course.image}
                       alt={course.title}
-                      className="object-cover w-full h-full"
+                      width={600}
+                      height={400}
                     />
                   </div>
                   <div className="p-6">

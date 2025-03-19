@@ -1,6 +1,7 @@
 import React from "react";
 import { WifiOff, CheckCheck, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const OfflineFeature = () => {
   return (
@@ -23,7 +24,7 @@ const OfflineFeature = () => {
               <p className="text-eduscape-muted mb-8 max-w-md">
                 Download courses and continue learning offline. No
                 interruptions, no excuses. Our app synchronizes your progress
-                when you're back online.
+                when you&apos;re back online.
               </p>
 
               <div className="space-y-4 mb-8">
@@ -52,10 +53,11 @@ const OfflineFeature = () => {
             {/* Right Column - Image */}
             <div className="relative order-1 md:order-2 animate-fade-in-right">
               <div className="rounded-3xl overflow-hidden shadow-2xl">
-                <img
-                  src="https://images.unsplash.com/photo-1432888622747-4eb9a8f5a70d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                  alt="Student studying offline"
-                  className="w-full h-auto"
+                <Image
+                  src="/feature-1.jpg"
+                  alt="Feature description 1"
+                  width={800} // adjust as needed
+                  height={500} // adjust as needed
                 />
               </div>
 
@@ -89,12 +91,11 @@ const OfflineFeature = () => {
                     className="w-16 h-16 rounded-xl overflow-hidden shadow-md animate-float"
                     style={{ animationDelay: `${index * 0.2}s` }}
                   >
-                    <img
-                      src={`https://images.unsplash.com/photo-${
-                        1550745165 + index * 100
-                      }?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&q=80`}
-                      alt={`Course thumbnail ${index}`}
-                      className="w-full h-full object-cover"
+                    <Image
+                      src="/feature-2.jpg"
+                      alt="Feature description 2"
+                      width={800} // adjust as needed
+                      height={500} // adjust as needed
                     />
                   </div>
                 ))}
