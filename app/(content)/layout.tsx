@@ -7,7 +7,6 @@ import {
   Download,
   User,
   Menu,
-  ShoppingCart,
   DownloadCloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
