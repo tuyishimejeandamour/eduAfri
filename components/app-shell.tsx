@@ -24,13 +24,12 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex w-full min-h-screen flex-col">
       <OfflineBanner />
       <OfflineDetector />
       <AnnouncementBar />
-
-      <header className="sticky top-0 z-40 bg-background border-b">
-        <div className=" flex h-16 items-center justify-between">
+      <header className="sticky w-full top-0 z-40 bg-background border-b">
+        <div className=" flex h-16 max-w-7xl mx-auto items-center justify-between">
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
