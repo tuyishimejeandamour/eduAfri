@@ -157,13 +157,30 @@ export function useDownloads() {
 
 // Helper function to cache download content
 async function cacheDownloadContent(download: any) {
-  // Implement caching logic here based on your needs
-  // This might involve storing the content in IndexedDB
-  // and using the Cache API for associated resources
+  // Make sure we have a valid download object with content_id
+  if (!download || !download.content_id) {
+    console.error('Invalid download object for caching:', download);
+    return;
+  }
+
   if (navigator.serviceWorker.controller) {
+    // Prepare the download data with content_id to be cached properly
+    const downloadData = {
+      ...download,
+      // If URL not provided, construct it
+      url: download.url || `/api/content/${download.content_id}`,
+      // Include the content page URL for navigation
+      content_page_url: `/content/${download.content_id}`
+    };
+    
+    console.log('Caching download content:', downloadData);
+    
+    // Send to service worker for caching
     navigator.serviceWorker.controller.postMessage({
       type: "CACHE_DOWNLOAD_CONTENT",
-      download,
+      download: downloadData,
     });
+  } else {
+    console.warn('No active service worker found when trying to cache content');
   }
 }

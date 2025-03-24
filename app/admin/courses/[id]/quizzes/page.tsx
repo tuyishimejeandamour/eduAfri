@@ -16,9 +16,9 @@ import { deleteQuiz } from "@/app/admin/actions";
 export default async function CourseQuizzesPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated

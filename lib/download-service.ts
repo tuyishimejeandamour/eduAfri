@@ -8,7 +8,7 @@ import {
   queueAction,
   getAllDownloads,
 } from "./indexeddb";
-import { saveOfflineContent } from "./offline-storage";
+import { saveContentForOffline } from "./offline-storage";
 import { toast } from "sonner";
 
 /**
@@ -47,84 +47,6 @@ export async function downloadContent(
     const contentData = await contentResponse.json();
     const { content, lessons, questions } = contentData.data;
 
-    // Save the main content to IndexedDB
-    await saveContent(content);
-
-    // Also save to offline-storage for future use
-    await saveOfflineContent({
-      id: content.id,
-      title: content.title,
-      type: content.type,
-      data: content,
-      userId: userId,
-    });
-
-    // For courses, download all related lessons and their quizzes
-    if (content.type === "course" && lessons && lessons.length > 0) {
-      toast.loading("Downloading related lessons...", { id: toastId });
-      
-      for (const lesson of lessons) {
-        // Save lesson content
-        await saveContent(lesson);
-        await saveOfflineContent({
-          id: lesson.id,
-          title: lesson.title,
-          type: lesson.type,
-          data: lesson,
-          userId: userId,
-        });
-
-        // Create download record for lesson
-        const lessonDownload = {
-          id: `${userId}-${lesson.id}`,
-          user_id: userId,
-          content_id: lesson.id,
-          downloaded_at: new Date().toISOString(),
-          size_bytes: 2 * 1024 * 1024, // 2MB for lessons
-          content: lesson,
-        };
-        await saveDownload(lessonDownload);
-
-        // If the lesson has a quiz, download it too
-        if (lesson.quiz_id) {
-          const quizResponse = await fetch(`/api/content/${lesson.quiz_id}`);
-          if (quizResponse.ok) {
-            const quizData = await quizResponse.json();
-            const quiz = quizData.data.content;
-            const questions = quizData.data.questions;
-
-            // Save quiz with its questions
-            quiz.questions = questions;
-            await saveContent(quiz);
-            await saveOfflineContent({
-              id: quiz.id,
-              title: quiz.title,
-              type: "quiz",
-              data: quiz,
-              userId: userId,
-            });
-
-            // Create download record for quiz
-            const quizDownload = {
-              id: `${userId}-${quiz.id}`,
-              user_id: userId,
-              content_id: quiz.id,
-              downloaded_at: new Date().toISOString(),
-              size_bytes: 1 * 1024 * 1024, // 1MB for quizzes
-              content: quiz,
-            };
-            await saveDownload(quizDownload);
-          }
-        }
-      }
-    }
-
-    // If this is a quiz, save its questions
-    if (content.type === "quiz" && questions && questions.length > 0) {
-      content.questions = questions;
-      await saveContent(content);
-    }
-
     // Calculate total size
     let sizeBytes = 0;
     switch (content.type) {
@@ -143,11 +65,116 @@ export async function downloadContent(
         sizeBytes = 1 * 1024 * 1024;
     }
 
+    // Save the main content to IndexedDB
+    await saveContent(content);
+
+    // Also save to offline-storage for future use
+    await saveContentForOffline({
+      id: content.id,
+      title: content.title,
+      type: content.type,
+      downloaded: true,
+      downloadedAt: new Date().toISOString(),
+      downloaded_at: new Date().toISOString(),
+      user_id: userId,
+      content_id: content.id,
+      size_bytes: sizeBytes,
+      content: content,
+    });
+
+    // For courses, download all related lessons and their quizzes
+    if (content.type === "course" && lessons && lessons.length > 0) {
+      toast.loading("Downloading related lessons...", { id: toastId });
+      
+      for (const lesson of lessons) {
+        // Save lesson content
+        await saveContent(lesson);
+        await saveContentForOffline({
+          id: lesson.id,
+          title: lesson.title,
+          type: lesson.type,
+          downloaded: true,
+          downloadedAt: new Date().toISOString(),
+          downloaded_at: new Date().toISOString(),
+          user_id: userId,
+          content_id: lesson.id,
+          size_bytes: 2 * 1024 * 1024,
+          content: lesson,
+        });
+
+        // Create download record for lesson
+        const lessonDownload = {
+          id: `${userId}-${lesson.id}`,
+          title: lesson.title,
+          type: lesson.type,
+          user_id: userId,
+          content_id: lesson.id,
+          downloaded: true,
+          downloadedAt: new Date().toISOString(),
+          downloaded_at: new Date().toISOString(),
+          size_bytes: 2 * 1024 * 1024, // 2MB for lessons
+          content: lesson,
+        };
+        await saveDownload(lessonDownload);
+
+        // If the lesson has a quiz, download it too
+        if (lesson.quiz_id) {
+          const quizResponse = await fetch(`/api/content/${lesson.quiz_id}`);
+          if (quizResponse.ok) {
+            const quizData = await quizResponse.json();
+            const quiz = quizData.data.content;
+            const questions = quizData.data.questions;
+
+            // Save quiz with its questions
+            quiz.questions = questions;
+            await saveContent(quiz);
+            await saveContentForOffline({
+              id: quiz.id,
+              title: quiz.title,
+              type: "quiz",
+              downloaded: true,
+              downloadedAt: new Date().toISOString(),
+              downloaded_at: new Date().toISOString(),
+              user_id: userId,
+              content_id: quiz.id,
+              size_bytes: 1 * 1024 * 1024,
+              content: quiz,
+            });
+
+            // Create download record for quiz
+            const quizDownload = {
+              id: `${userId}-${quiz.id}`,
+              title: quiz.title,
+              type: "quiz",
+              user_id: userId,
+              content_id: quiz.id,
+              downloaded: true,
+              downloadedAt: new Date().toISOString(),
+              downloaded_at: new Date().toISOString(),
+              size_bytes: 1 * 1024 * 1024, // 1MB for quizzes
+              content: quiz,
+            };
+            await saveDownload(quizDownload);
+          }
+        }
+      }
+    }
+
+    // If this is a quiz, save its questions
+    if (content.type === "quiz" && questions && questions.length > 0) {
+      content.questions = questions;
+      await saveContent(content);
+    }
+
     // Record the download in IndexedDB
     const download = {
       id: `${userId}-${contentId}`,
+      title: content.title,
+      type: content.type,
       user_id: userId,
       content_id: contentId,
+      downloaded: true,
+      downloadedAt: new Date().toISOString(),
       downloaded_at: new Date().toISOString(),
       size_bytes: sizeBytes,
       content: content,

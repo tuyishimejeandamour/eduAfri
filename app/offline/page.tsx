@@ -12,7 +12,7 @@ export default function OfflinePage() {
           <WifiOff className="h-12 w-12 text-muted-foreground" />
         </div>
         
-        <h1 className="text-3xl font-bold tracking-tight">You're offline</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Youre offline</h1>
         
         <p className="text-muted-foreground">
           It looks like you're not connected to the internet. Check your connection and try again.

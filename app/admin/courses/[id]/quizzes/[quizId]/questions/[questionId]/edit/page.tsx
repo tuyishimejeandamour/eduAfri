@@ -7,6 +7,7 @@ export default async function EditQuestionPage({
 }: {
   params: { id: string; quizId: string; questionId: string };
 }) {
+  const { id, quizId, questionId } = params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
@@ -21,18 +22,18 @@ export default async function EditQuestionPage({
   const { data: question, error: questionError } = await supabase
     .from("questions")
     .select("*")
-    .eq("id", params.questionId)
-    .eq("quiz_id", params.quizId)
+    .eq("id", questionId)
+    .eq("quiz_id", quizId)
     .single();
 
   if (questionError || !question) {
-    redirect(`/admin/courses/${id}/quizzes/${params.quizId}/questions`);
+    redirect(`/admin/courses/${id}/quizzes/${quizId}/questions`);
   }
 
   return (
     <div className="container py-10">
       <h1 className="text-3xl font-bold mb-8">Edit Question</h1>
-      <QuestionForm question={question} quizId={params.quizId} courseId={id} />
+      <QuestionForm question={question} quizId={quizId} courseId={id} />
     </div>
   );
 }

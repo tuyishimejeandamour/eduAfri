@@ -152,14 +152,22 @@ export function useOffline() {
   // Update online status - only in browser
   useEffect(() => {
     if (!isBrowser) return;
-
+    
     const handleOnline = () => {
       if (!isMounted.current) return;
       setIsOnline(true);
       toast.success("You're back online", {
         description: "Syncing your changes...",
       });
-
+      
+      // Notify service worker about online status change
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: "ONLINE_STATUS_CHANGED",
+          isOnline: true
+        });
+      }
+      
       // Add a small delay before syncing to ensure browser is really online
       setTimeout(() => {
         if (isMounted.current) {
@@ -167,7 +175,7 @@ export function useOffline() {
         }
       }, 1000);
     };
-
+    
     const handleOffline = () => {
       if (!isMounted.current) return;
       setIsOnline(false);
@@ -175,11 +183,19 @@ export function useOffline() {
         description:
           "Changes will be saved locally and synced when you're back online.",
       });
+      
+      // Notify service worker about online status change
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+          type: "ONLINE_STATUS_CHANGED",
+          isOnline: false
+        });
+      }
     };
-
+    
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
-
+    
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);

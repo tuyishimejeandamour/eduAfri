@@ -369,26 +369,20 @@ export async function getAllContent(): Promise<any[]> {
 }
 
 // Download functions
-export async function saveDownload(download: any): Promise<any> {
-  return updateItem(STORES.DOWNLOADS, download);
+export async function saveDownload(content: DownloadedContent): Promise<DownloadedContent> {
+  return updateItem(STORES.DOWNLOADS, content);
 }
 
-export async function getDownload(id: string): Promise<any | null> {
+export async function getDownload(id: string): Promise<DownloadedContent | null> {
   return getItem(STORES.DOWNLOADS, id);
 }
 
-export async function getDownloadByContentId(
-  contentId: string
-): Promise<any | null> {
-  const downloads = await getItemsByIndex(
-    STORES.DOWNLOADS,
-    "content_id",
-    contentId
-  );
+export async function getDownloadByContentId(contentId: string): Promise<DownloadedContent | null> {
+  const downloads = await getItemsByIndex<DownloadedContent>(STORES.DOWNLOADS, "content_id", contentId);
   return downloads.length > 0 ? downloads[0] : null;
 }
 
-export async function getAllDownloads(): Promise<any[]> {
+export async function getAllDownloads(): Promise<DownloadedContent[]> {
   return getAllItems(STORES.DOWNLOADS);
 }
 
@@ -528,4 +522,17 @@ export async function updateActionStatus(
 
 export async function removeAction(id: number): Promise<boolean> {
   return deleteItem(STORES.ACTION_QUEUE, id);
+}
+
+export interface DownloadedContent {
+  id: string;
+  title: string;
+  type: string;
+  downloaded: boolean;
+  downloadedAt: string;
+  downloaded_at: string;
+  user_id: string;
+  content_id: string;
+  size_bytes: number;
+  content?: any;
 }

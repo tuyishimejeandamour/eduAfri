@@ -17,7 +17,7 @@ export default async function QuizQuestionsPage({
 }: {
   params: { id: string; quizId: string };
 }) {
-  const { id, quizId } = await params;
+  const { id, quizId } = params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
@@ -45,7 +45,7 @@ export default async function QuizQuestionsPage({
     .from("questions")
     .select("*")
     .eq("quiz_id", quizId)
-    .order("id", { ascending: true });
+    .order("created_at", { ascending: false });
 
   if (questionsError) {
     console.error("Error fetching questions:", questionsError);

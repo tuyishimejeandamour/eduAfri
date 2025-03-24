@@ -1,182 +1,100 @@
 "use client";
 
+import { DownloadedContent, saveDownload, getDownload, getAllDownloads, deleteDownload, clearAllDownloads } from './indexeddb';
+
 // Define content item type
 export interface OfflineContentItem {
   id: string;           // Content ID
   title: string;        // Content title
   type: string;         // Content type (course, lesson, quiz)
-  data: any;            // Actual content data
-  userId: string;       // User who downloaded this
-  downloadedAt?: Date;  // When it was downloaded
-  lastAccessedAt?: Date; // When it was last accessed
+  downloaded: boolean;  // Whether the content is downloaded
+  downloadedAt: string; // When it was downloaded
+  downloaded_at: string; // Legacy field for compatibility
+  user_id: string;      // User who downloaded this
+  content_id: string;   // ID of the content
+  size_bytes: number;   // Size of the content in bytes
+  content?: any;        // The actual content data
 }
 
-// Database configuration
-const dbName = 'offline-storage';
-const dbVersion = 1;
-
-// Initialize IndexedDB
-async function getDb(): Promise<IDBDatabase | null> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(dbName, dbVersion);
-
-    request.onerror = () => {
-      console.error("Error opening offline storage database");
-      resolve(null);
-    };
-
-    request.onsuccess = (event) => {
-      resolve((event.target as IDBOpenDBRequest).result);
-    };
-
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      if (!db.objectStoreNames.contains('offline_content')) {
-        const store = db.createObjectStore('offline_content', { keyPath: 'id' });
-        store.createIndex('by_type', 'type');
-        store.createIndex('by_user', 'userId');
-        store.createIndex('by_user_and_type', ['userId', 'type']);
-      }
-    };
-  });
-}
+// Re-export the DownloadedContent type for consistency
+export type { DownloadedContent } from './indexeddb';
 
 /**
  * Save content to offline storage
- * @param item Content item to save
+ * @param content Content to save for offline use
  */
-export async function saveOfflineContent(item: OfflineContentItem): Promise<void> {
-  const db = await getDb();
-  if (!db) return;
-
-  const now = new Date();
-  const transaction = db.transaction('offline_content', 'readwrite');
-  const store = transaction.objectStore('offline_content');
-  
-  await new Promise<void>((resolve, reject) => {
-    const request = store.put({
-      ...item,
-      downloadedAt: item.downloadedAt || now,
-      lastAccessedAt: now,
-    });
-
-    request.onsuccess = () => resolve();
-    request.onerror = () => {
-      console.error('Error saving offline content:', request.error);
-      resolve();
-    };
-  });
-}
-
-/**
- * Get all offline content
- * @param userId Optional user ID to filter by
- * @param type Optional content type to filter by
- */
-export async function getOfflineContent(
-  userId?: string, 
-  type?: string
-): Promise<OfflineContentItem[]> {
-  const db = await getDb();
-  if (!db) return [];
-
-  const transaction = db.transaction('offline_content', 'readonly');
-  const store = transaction.objectStore('offline_content');
-
-  return new Promise((resolve) => {
-    if (userId && type) {
-      const index = store.index('by_user_and_type');
-      const request = index.getAll([userId, type]);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => {
-        console.error('Error getting offline content:', request.error);
-        resolve([]);
-      };
-    } else if (userId) {
-      const index = store.index('by_user');
-      const request = index.getAll(userId);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => {
-        console.error('Error getting offline content:', request.error);
-        resolve([]);
-      };
-    } else if (type) {
-      const index = store.index('by_type');
-      const request = index.getAll(type);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => {
-        console.error('Error getting offline content:', request.error);
-        resolve([]);
-      };
-    } else {
-      const request = store.getAll();
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => {
-        console.error('Error getting offline content:', request.error);
-        resolve([]);
-      };
-    }
-  });
+export async function saveContentForOffline(content: DownloadedContent) {
+  try {
+    await saveDownload(content);
+    return true;
+  } catch (error) {
+    console.error('Error saving content for offline use:', error);
+    return false;
+  }
 }
 
 /**
  * Get a specific content item by ID
  * @param id Content ID
  */
-export async function getOfflineContentById(id: string): Promise<OfflineContentItem | undefined> {
-  const db = await getDb();
-  if (!db) return undefined;
+export async function getDownloadedContentById(id: string): Promise<DownloadedContent | null> {
+  try {
+    // First try to get the download record
+    const download = await getDownload(id);
+    if (!download) return null;
 
-  const transaction = db.transaction('offline_content', 'readonly');
-  const store = transaction.objectStore('offline_content');
-
-  return new Promise((resolve) => {
-    const request = store.get(id);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => {
-      console.error('Error getting offline content by ID:', request.error);
-      resolve(undefined);
+    // Return the actual content data, combined with metadata
+    return {
+      ...download,
+      ...(typeof download.content === 'object' ? download.content : {}), // Spread the content data if it exists
+      downloaded: true, // Mark as downloaded content
+      downloadedAt: download.downloaded_at,
     };
-  });
+  } catch (error) {
+    console.error('Error retrieving downloaded content:', error);
+    return null;
+  }
 }
 
 /**
- * Delete offline content
+ * Get all downloaded content
+ */
+export async function getAllDownloadedContent(): Promise<DownloadedContent[]> {
+  try {
+    const downloads = await getAllDownloads();
+    return downloads.map(download => ({
+      ...download,
+      ...(download.content || {}),
+      downloaded: true,
+      downloadedAt: download.downloaded_at,
+    }));
+  } catch (error) {
+    console.error('Error retrieving all downloaded content:', error);
+    return [];
+  }
+}
+
+/**
+ * Delete downloaded content by ID
  * @param id Content ID
  */
-export async function deleteOfflineContent(id: string): Promise<boolean> {
-  const db = await getDb();
-  if (!db) return false;
-
-  const transaction = db.transaction('offline_content', 'readwrite');
-  const store = transaction.objectStore('offline_content');
-
-  return new Promise((resolve) => {
-    const request = store.delete(id);
-    request.onsuccess = () => resolve(true);
-    request.onerror = () => {
-      console.error('Error deleting offline content:', request.error);
-      resolve(false);
-    };
-  });
+export async function removeDownloadedContent(id: string): Promise<boolean> {
+  try {
+    return await deleteDownload(id);
+  } catch (error) {
+    console.error('Error removing downloaded content:', error);
+    return false;
+  }
 }
 
 /**
- * Clear all offline content
+ * Clear all downloaded content
  */
-export async function clearOfflineContent(): Promise<boolean> {
-  const db = await getDb();
-  if (!db) return false;
-
-  const transaction = db.transaction('offline_content', 'readwrite');
-  const store = transaction.objectStore('offline_content');
-
-  return new Promise((resolve) => {
-    const request = store.clear();
-    request.onsuccess = () => resolve(true);
-    request.onerror = () => {
-      console.error('Error clearing offline content:', request.error);
-      resolve(false);
-    };
-  });
+export async function clearAllDownloadedContent(): Promise<boolean> {
+  try {
+    return await clearAllDownloads();
+  } catch (error) {
+    console.error('Error clearing all downloaded content:', error);
+    return false;
+  }
 }

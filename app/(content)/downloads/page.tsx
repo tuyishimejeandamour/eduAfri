@@ -30,6 +30,34 @@ import {
 } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 
+  // Group downloads by content type
+  interface Download {
+    id: string;
+    content?: {
+      type: string;
+      title: string;
+      language: string;
+    };
+    content_id: string;
+    downloaded_at: string;
+    size_bytes?: number;
+  }
+
+
+  interface ContentType {
+    type: 'course' | 'lesson' | 'quiz';
+    title: string;
+    language: string;
+  }
+
+  interface DownloadItem {
+    id: string;
+    content: ContentType;
+    content_id: string;
+    downloaded_at: string;
+    size_bytes?: number;
+  }
+
 export default function DownloadsPage() {
   const router = useRouter();
   const { isAuthenticated, isOfflineMode } = useAuth();
@@ -79,14 +107,13 @@ export default function DownloadsPage() {
     );
   }
 
-  // Group downloads by content type
-  const courses = downloads?.filter(d => d.content?.type === "course") || [];
-  const lessons = downloads?.filter(d => d.content?.type === "lesson") || [];
-  const quizzes = downloads?.filter(d => d.content?.type === "quiz") || [];
 
-  // Calculate total storage used
-  const totalStorageBytes = downloads?.reduce(
-    (total, d) => total + (d.size_bytes || 0), 0) || 0;
+  const courses = downloads?.filter((d: Download) => d.content?.type === "course") || [];
+  const lessons = downloads?.filter((d: Download) => d.content?.type === "lesson") || [];
+  const quizzes = downloads?.filter((d: Download) => d.content?.type === "quiz") || [];
+
+  const totalStorageBytes: number = downloads?.reduce(
+      (total: number, d: DownloadItem) => total + (d.size_bytes || 0), 0) || 0;
   const totalStorageMB = (totalStorageBytes / (1024 * 1024)).toFixed(2);
 
   return (
@@ -226,7 +253,7 @@ export default function DownloadsPage() {
           <TabsContent value="all" className="space-y-4 mt-6">
             {downloads && downloads.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {downloads.map((download, index) => (
+                {downloads.map((download:DownloadItem, index:number) => (
                   <Card
                     key={download.id}
                     className="animate-bounce-in overflow-hidden"
@@ -237,8 +264,8 @@ export default function DownloadsPage() {
                         <div>
                           <CardTitle className="text-lg line-clamp-1">{download.content?.title}</CardTitle>
                           <CardDescription>
-                            {download.content?.type.charAt(0).toUpperCase() +
-                              download.content?.type.slice(1)}{" "}
+                            {download.content?.type?.charAt(0).toUpperCase() +
+                              download.content?.type?.slice(1)}{" "}
                             • {download.content?.language}
                           </CardDescription>
                         </div>
@@ -258,7 +285,7 @@ export default function DownloadsPage() {
                       </p>
                     </CardContent>
                     <CardFooter className="flex justify-between pt-0">
-                      <Link href={`/content/${download.content_id}`}>
+                      <Link href={!isOnline ? `/offline/content/${download.content_id}` : `/content/${download.content_id}`}>
                         <Button variant="outline" size="sm">
                           View
                         </Button>
@@ -295,7 +322,7 @@ export default function DownloadsPage() {
           <TabsContent value="courses" className="space-y-4 mt-6">
             {courses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {courses.map((download, index) => (
+                {courses.map((download:DownloadItem, index:number) => (
                   <Card
                     key={download.id}
                     className="animate-bounce-in overflow-hidden"
@@ -323,7 +350,7 @@ export default function DownloadsPage() {
                       </p>
                     </CardContent>
                     <CardFooter className="flex justify-between pt-0">
-                      <Link href={`/content/${download.content_id}`}>
+                      <Link href={!isOnline ? `/offline/content/${download.content_id}` : `/content/${download.content_id}`}>
                         <Button variant="outline" size="sm">
                           View
                         </Button>
@@ -356,7 +383,7 @@ export default function DownloadsPage() {
           <TabsContent value="lessons" className="space-y-4 mt-6">
             {lessons.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {lessons.map((download, index) => (
+                {lessons.map((download:DownloadItem, index:number) => (
                   <Card
                     key={download.id}
                     className="animate-bounce-in overflow-hidden"
@@ -384,7 +411,7 @@ export default function DownloadsPage() {
                       </p>
                     </CardContent>
                     <CardFooter className="flex justify-between pt-0">
-                      <Link href={`/content/${download.content_id}`}>
+                      <Link href={!isOnline ? `/offline/content/${download.content_id}` : `/content/${download.content_id}`}>
                         <Button variant="outline" size="sm">
                           View
                         </Button>
@@ -417,7 +444,7 @@ export default function DownloadsPage() {
           <TabsContent value="quizzes" className="space-y-4 mt-6">
             {quizzes.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {quizzes.map((download, index) => (
+                {quizzes.map((download:DownloadItem, index:number) => (
                   <Card
                     key={download.id}
                     className="animate-bounce-in overflow-hidden"
@@ -445,7 +472,7 @@ export default function DownloadsPage() {
                       </p>
                     </CardContent>
                     <CardFooter className="flex justify-between pt-0">
-                      <Link href={`/content/${download.content_id}`}>
+                      <Link href={!isOnline ? `/offline/content/${download.content_id}` : `/content/${download.content_id}`}>
                         <Button variant="outline" size="sm">
                           View
                         </Button>

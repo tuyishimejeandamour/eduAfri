@@ -7,6 +7,7 @@ export default async function EditQuizPage({
 }: {
   params: { id: string; quizId: string };
 }) {
+  const { id, quizId } = params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
@@ -21,7 +22,7 @@ export default async function EditQuizPage({
   const { data: quiz, error: quizError } = await supabase
     .from("content")
     .select("*")
-    .eq("id", params.quizId)
+    .eq("id", quizId)
     .eq("type", "quiz")
     .single();
 

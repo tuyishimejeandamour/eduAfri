@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { createQuestion, updateQuestion } from "@/app/admin/actions"
 import { Loader2, Plus, Trash2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 // Define the form schema
 const questionFormSchema = z.object({
@@ -32,6 +33,7 @@ interface QuestionFormProps {
 
 export function QuestionForm({ question, quizId, courseId }: QuestionFormProps) {
   const router = useRouter()
+  const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Default values for the form
@@ -70,8 +72,18 @@ export function QuestionForm({ question, quizId, courseId }: QuestionFormProps) 
         })
 
         if (result.error) {
+          toast({
+            variant: "destructive",
+            title: "Error updating question",
+            description: result.error,
+          })
           throw new Error(result.error)
         }
+
+        toast({
+          title: "Question updated",
+          description: "Your question has been updated successfully.",
+        })
       } else {
         // Create new question
         const result = await createQuestion({
@@ -80,8 +92,18 @@ export function QuestionForm({ question, quizId, courseId }: QuestionFormProps) 
         })
 
         if (result.error) {
+          toast({
+            variant: "destructive",
+            title: "Error creating question",
+            description: result.error,
+          })
           throw new Error(result.error)
         }
+
+        toast({
+          title: "Question created",
+          description: "Your question has been created successfully.",
+        })
       }
 
       router.push(`/admin/courses/${courseId}/quizzes/${quizId}/questions`)

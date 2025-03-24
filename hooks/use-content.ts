@@ -9,7 +9,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useOffline } from "@/hooks/use-offline";
 import { useOfflineAuth } from "@/lib/offline-auth";
-import { getOfflineContent, getOfflineContentById } from "@/lib/offline-storage";
+import { getAllDownloadedContent, getDownloadedContentById } from "@/lib/offline-storage";
 import { toast } from "sonner";
 
 export function useContent() {
@@ -58,10 +58,10 @@ export function useContent() {
         }
         
         // If not in IndexedDB, try from offline-storage
-        const offlineStorageContent = await getOfflineContent();
+        const offlineStorageContent = await getAllDownloadedContent();
         if (offlineStorageContent && offlineStorageContent.length > 0) {
           // Map to match expected format
-          let items = offlineStorageContent.map(item => item.data);
+          let items = offlineStorageContent.map(item => item.content);
           
           // Filter based on params
           if (params.type) {
@@ -106,9 +106,9 @@ export function useContent() {
       console.error("Error fetching content from API:", error);
       // If API call fails, try offline content as fallback
       try {
-        const offlineContent = await getOfflineContent();
+        const offlineContent = await getAllDownloadedContent();
         if (offlineContent && offlineContent.length > 0) {
-          return offlineContent.map(item => item.data);
+          return offlineContent.map(item => item.content);
         }
       } catch (innerError) {
         console.error("Error fetching fallback offline content:", innerError);
@@ -134,12 +134,12 @@ export function useContent() {
         }
         
         // If not in IndexedDB, try from offline-storage
-        const offlineStorageContent = await getOfflineContentById(id);
+        const offlineStorageContent = await getDownloadedContentById(id);
         if (offlineStorageContent) {
           return {
-            content: offlineStorageContent.data,
-            lessons: offlineStorageContent.data.lessons || [],
-            questions: offlineStorageContent.data.questions || [],
+            content: offlineStorageContent.content,
+            lessons: offlineStorageContent.content.lessons || [],
+            questions: offlineStorageContent.content.questions || [],
             progress: null,
           };
         }
@@ -169,12 +169,12 @@ export function useContent() {
       
       // If API call fails, try offline content as fallback
       try {
-        const offlineContent = await getOfflineContentById(id);
+        const offlineContent = await getDownloadedContentById(id);
         if (offlineContent) {
           return {
-            content: offlineContent.data,
-            lessons: offlineContent.data.lessons || [],
-            questions: offlineContent.data.questions || [],
+            content: offlineContent.content,
+            lessons: offlineContent.content.lessons || [],
+            questions: offlineContent.content.questions || [],
             progress: null,
           };
         }
