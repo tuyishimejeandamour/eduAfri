@@ -93,7 +93,7 @@ export default async function CoursesPage() {
                       Edit
                     </Button>
                   </Link>
-                  <form action={deleteCourse}>
+                  <form action={deleteCourse as unknown as string}>
                     <input type="hidden" name="id" value={course.id} />
                     <Button
                       variant="outline"

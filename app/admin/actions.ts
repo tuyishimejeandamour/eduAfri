@@ -12,7 +12,7 @@ export async function createCourse(formData: any) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    throw new Error("Not authenticated")
+    return { error: "Not authenticated" }
   }
 
   // Verify user has admin role (you should add this check)
@@ -23,10 +23,10 @@ export async function createCourse(formData: any) {
     .single()
 
   if (!profile || profile.role !== "admin") {
-    throw new Error("Unauthorized. Admin access required.")
+    return { error: "Unauthorized. Admin access required." }
   }
 
-  const { error } = await supabase.from("content").insert({
+  const { data, error } = await supabase.from("content").insert({
     title: formData.title,
     description: formData.description,
     type: formData.type,
@@ -36,14 +36,15 @@ export async function createCourse(formData: any) {
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     created_by: user.id,
-  })
+  }).select().single()
 
   if (error) {
     console.error("Error creating course:", error)
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath("/admin/courses")
+  return { success: true, id: data.id }
 }
 
 export async function updateCourse(formData: any) {
@@ -54,7 +55,7 @@ export async function updateCourse(formData: any) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    throw new Error("Not authenticated")
+    return { error: "Not authenticated" }
   }
 
   // Verify user has admin role
@@ -65,7 +66,7 @@ export async function updateCourse(formData: any) {
     .single()
 
   if (!profile || profile.role !== "admin") {
-    throw new Error("Unauthorized. Admin access required.")
+    return { error: "Unauthorized. Admin access required." }
   }
 
   const { error } = await supabase
@@ -81,10 +82,11 @@ export async function updateCourse(formData: any) {
     .eq("id", formData.id)
 
   if (error) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath("/admin/courses")
+  return { success: true }
 }
 
 export async function deleteCourse(formData: FormData) {
@@ -95,7 +97,7 @@ export async function deleteCourse(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    throw new Error("Not authenticated")
+    return { error: "Not authenticated" }
   }
 
   // Verify user has admin role
@@ -106,12 +108,12 @@ export async function deleteCourse(formData: FormData) {
     .single()
 
   if (!profile || profile.role !== "admin") {
-    throw new Error("Unauthorized. Admin access required.")
+    return { error: "Unauthorized. Admin access required." }
   }
 
   const id = formData.get("id") as string
   if (!id) {
-    throw new Error("Course ID is required")
+    return { error: "Course ID is required" }
   }
 
   // First delete all quizzes associated with this course
@@ -132,7 +134,7 @@ export async function deleteCourse(formData: FormData) {
 
     if (questionsError) {
       console.error("Error deleting questions:", questionsError)
-      throw new Error("Failed to delete associated questions")
+      return { error: "Failed to delete associated questions" }
     }
 
     // Delete the quizzes
@@ -143,7 +145,7 @@ export async function deleteCourse(formData: FormData) {
 
     if (quizzesError) {
       console.error("Error deleting quizzes:", quizzesError)
-      throw new Error("Failed to delete associated quizzes")
+      return { error: "Failed to delete associated quizzes" }
     }
   }
 
@@ -156,7 +158,7 @@ export async function deleteCourse(formData: FormData) {
 
   if (lessonsError) {
     console.error("Error deleting lessons:", lessonsError)
-    throw new Error("Failed to delete associated lessons")
+    return { error: "Failed to delete associated lessons" }
   }
 
   // Finally delete the course
@@ -164,7 +166,7 @@ export async function deleteCourse(formData: FormData) {
 
   if (error) {
     console.error("Error deleting course:", error)
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath("/admin/courses")
@@ -194,7 +196,7 @@ export async function createQuiz(formData: any) {
     return { error: "Unauthorized. Admin access required." }
   }
 
-  const { error } = await supabase.from("content").insert({
+  const { data, error } = await supabase.from("content").insert({
     title: formData.title,
     description: formData.description,
     type: formData.type,
@@ -203,7 +205,7 @@ export async function createQuiz(formData: any) {
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     created_by: user.id,
-  })
+  }).select().single()
 
   if (error) {
     console.error("Error creating quiz:", error)
@@ -211,7 +213,7 @@ export async function createQuiz(formData: any) {
   }
 
   revalidatePath(`/admin/courses/${formData.course_id}/quizzes`)
-  return { success: true }
+  return { success: true, id: data.id }
 }
 
 export async function updateQuiz(formData: any) {
@@ -223,6 +225,17 @@ export async function updateQuiz(formData: any) {
   } = await supabase.auth.getUser()
   if (!user) {
     return { error: "Not authenticated" }
+  }
+
+  // Verify user has admin role
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile || profile.role !== "admin") {
+    return { error: "Unauthorized. Admin access required." }
   }
 
   const { error } = await supabase
@@ -254,7 +267,7 @@ export async function deleteQuiz(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    throw new Error("Not authenticated")
+    return { error: "Not authenticated" }
   }
 
   // Verify user has admin role
@@ -265,12 +278,12 @@ export async function deleteQuiz(formData: FormData) {
     .single()
 
   if (!profile || profile.role !== "admin") {
-    throw new Error("Unauthorized. Admin access required.")
+    return { error: "Unauthorized. Admin access required." }
   }
 
   const id = formData.get("id") as string
   if (!id) {
-    throw new Error("Quiz ID is required")
+    return { error: "Quiz ID is required" }
   }
 
   // First get the course_id for this quiz
@@ -281,7 +294,7 @@ export async function deleteQuiz(formData: FormData) {
     .single()
 
   if (!quiz) {
-    throw new Error("Quiz not found")
+    return { error: "Quiz not found" }
   }
 
   // Delete all questions for this quiz
@@ -292,7 +305,7 @@ export async function deleteQuiz(formData: FormData) {
 
   if (questionsError) {
     console.error("Error deleting questions:", questionsError)
-    throw new Error("Failed to delete associated questions")
+    return { error: "Failed to delete associated questions" }
   }
 
   // Delete the quiz
@@ -300,10 +313,11 @@ export async function deleteQuiz(formData: FormData) {
 
   if (error) {
     console.error("Error deleting quiz:", error)
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath(`/admin/courses/${quiz?.course_id}/quizzes`)
+  return { success: true }
 }
 
 // Question actions
@@ -318,20 +332,31 @@ export async function createQuestion(formData: any) {
     return { error: "Not authenticated" }
   }
 
-  const { error } = await supabase.from("questions").insert({
+  // Verify user has admin role
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile || profile.role !== "admin") {
+    return { error: "Unauthorized. Admin access required." }
+  }
+
+  const { data, error } = await supabase.from("questions").insert({
     quiz_id: formData.quiz_id,
     question_text: formData.question_text,
     options: formData.options,
     correct_answer: formData.correct_answer,
     explanation: formData.explanation || null,
-  })
+  }).select().single()
 
   if (error) {
     return { error: error.message }
   }
 
   revalidatePath(`/admin/courses/${formData.course_id}/quizzes/${formData.quiz_id}/questions`)
-  return { success: true }
+  return { success: true, id: data.id }
 }
 
 export async function updateQuestion(formData: any) {
@@ -343,6 +368,17 @@ export async function updateQuestion(formData: any) {
   } = await supabase.auth.getUser()
   if (!user) {
     return { error: "Not authenticated" }
+  }
+
+  // Verify user has admin role
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile || profile.role !== "admin") {
+    return { error: "Unauthorized. Admin access required." }
   }
 
   const { error } = await supabase
@@ -371,7 +407,7 @@ export async function deleteQuestion(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    throw new Error("Not authenticated")
+    return { error: "Not authenticated" }
   }
 
   // Verify user has admin role
@@ -382,7 +418,7 @@ export async function deleteQuestion(formData: FormData) {
     .single()
 
   if (!profile || profile.role !== "admin") {
-    throw new Error("Unauthorized. Admin access required.")
+    return { error: "Unauthorized. Admin access required." }
   }
 
   const id = formData.get("id") as string
@@ -390,15 +426,16 @@ export async function deleteQuestion(formData: FormData) {
   const courseId = formData.get("courseId") as string
 
   if (!id || !quizId || !courseId) {
-    throw new Error("Missing required fields")
+    return { error: "Missing required fields" }
   }
 
   const { error } = await supabase.from("questions").delete().eq("id", id)
 
   if (error) {
-    throw new Error(error.message)
+    return { error: error.message }
   }
 
   revalidatePath(`/admin/courses/${courseId}/quizzes/${quizId}/questions`)
+  return { success: true }
 }
 

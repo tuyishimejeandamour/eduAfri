@@ -5,9 +5,9 @@ import { QuestionForm } from "@/app/admin/components/question-form";
 export default async function EditQuestionPage({
   params,
 }: {
-  params: { id: string; quizId: string; questionId: string };
+  params: Promise<{ id: string; quizId: string; questionId: string }>;
 }) {
-  const { id, quizId, questionId } = params;
+  const { id, quizId, questionId } = await params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated

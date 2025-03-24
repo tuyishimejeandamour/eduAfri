@@ -9,7 +9,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useOffline } from "@/hooks/use-offline";
 import { useOfflineAuth } from "@/lib/offline-auth";
-import { getAllDownloadedContent, getDownloadedContentById } from "@/lib/offline-storage";
+import { getAllDownloadedContent, getDownloadedContentById, saveContentForOffline } from "@/lib/offline-storage";
 import { toast } from "sonner";
 
 export function useContent() {

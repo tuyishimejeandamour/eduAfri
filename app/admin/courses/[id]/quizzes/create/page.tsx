@@ -5,9 +5,9 @@ import { QuizForm } from "@/app/admin/components/quiz-form";
 export default async function CreateQuizPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } =  await params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated

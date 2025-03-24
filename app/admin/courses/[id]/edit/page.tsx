@@ -5,9 +5,9 @@ import { CourseForm } from "@/app/admin/components/course-form";
 export default async function EditCoursePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } =  await params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated

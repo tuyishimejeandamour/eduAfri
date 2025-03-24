@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, useFieldArray } from "react-hook-form"
+import { useForm, useFieldArray, FieldValues } from "react-hook-form"
 import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -13,17 +13,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { createQuestion, updateQuestion } from "@/app/admin/actions"
 import { Loader2, Plus, Trash2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
+
+// Type for an option field
+type OptionField = string;
 
 // Define the form schema
 const questionFormSchema = z.object({
   question_text: z.string().min(3, "Question must be at least 3 characters"),
-  options: z.array(z.string().min(1, "Option cannot be empty")).min(2, "At least 2 options are required"),
-  correct_answer: z.string().min(0),
+  options: z.array(z.string()).min(2, "At least 2 options are required"),
+  correct_answer: z.string().min(0, "Please select the correct answer"),
   explanation: z.string().optional(),
 })
 
-type QuestionFormValues = z.infer<typeof questionFormSchema>
+type QuestionFormValues = z.infer<typeof questionFormSchema> & FieldValues
 
 interface QuestionFormProps {
   question?: any
@@ -33,26 +36,27 @@ interface QuestionFormProps {
 
 export function QuestionForm({ question, quizId, courseId }: QuestionFormProps) {
   const router = useRouter()
-  const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // Default values for the form
-  const defaultValues: Partial<QuestionFormValues> = {
-    question_text: question?.question_text || "",
-    options: question?.options || ["", ""],
-    correct_answer: question?.correct_answer?.toString() || "0",
-    explanation: question?.explanation || "",
-  }
 
   const form = useForm<QuestionFormValues>({
     resolver: zodResolver(questionFormSchema),
-    defaultValues,
+    defaultValues: {
+      question_text: question?.question_text || "",
+      options: question?.options || ["", ""],
+      correct_answer: question?.correct_answer?.toString() || "0",
+      explanation: question?.explanation || "",
+    },
   })
 
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
+  const { fields, append, remove } = useFieldArray<QuestionFormValues>({
     name: "options",
+    control: form.control,
   })
+
+  // Update the append button to use an empty array item
+  const addEmptyOption = () => {
+    append("")
+  }
 
   async function onSubmit(data: QuestionFormValues) {
     setIsSubmitting(true)
@@ -72,16 +76,13 @@ export function QuestionForm({ question, quizId, courseId }: QuestionFormProps) 
         })
 
         if (result.error) {
-          toast({
-            variant: "destructive",
-            title: "Error updating question",
+          toast.error("Error updating question", {
             description: result.error,
-          })
+          });
           throw new Error(result.error)
         }
 
-        toast({
-          title: "Question updated",
+        toast.success("Question updated", {
           description: "Your question has been updated successfully.",
         })
       } else {
@@ -92,16 +93,13 @@ export function QuestionForm({ question, quizId, courseId }: QuestionFormProps) 
         })
 
         if (result.error) {
-          toast({
-            variant: "destructive",
-            title: "Error creating question",
+          toast.error("Error creating question", {
             description: result.error,
-          })
+          });
           throw new Error(result.error)
         }
 
-        toast({
-          title: "Question created",
+        toast.success("Question created", {
           description: "Your question has been created successfully.",
         })
       }
@@ -139,7 +137,7 @@ export function QuestionForm({ question, quizId, courseId }: QuestionFormProps) 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <FormLabel>Answer Options</FormLabel>
-                <Button type="button" variant="outline" size="sm" onClick={() => append("")} className="h-8 gap-1">
+                <Button type="button" variant="outline" size="sm" onClick={addEmptyOption} className="h-8 gap-1">
                   <Plus className="h-3.5 w-3.5" />
                   Add Option
                 </Button>

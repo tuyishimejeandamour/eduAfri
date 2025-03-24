@@ -23,7 +23,7 @@ export type { DownloadedContent } from './indexeddb';
  * Save content to offline storage
  * @param content Content to save for offline use
  */
-export async function saveContentForOffline(content: DownloadedContent) {
+export async function saveContentForOffline(content: DownloadedContent): Promise<boolean> {
   try {
     await saveDownload(content);
     return true;

@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { createQuiz, updateQuiz } from "@/app/admin/actions"
 import { Loader2 } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner";
 
 // Define the form schema
 const quizFormSchema = z.object({
@@ -32,7 +32,6 @@ interface QuizFormProps {
 
 export function QuizForm({ quiz, courseId, languages }: QuizFormProps) {
   const router = useRouter()
-  const { toast } = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Default values for the form
@@ -59,18 +58,11 @@ export function QuizForm({ quiz, courseId, languages }: QuizFormProps) {
         })
 
         if (result.error) {
-          toast({
-            variant: "destructive",
-            title: "Error updating quiz",
-            description: result.error,
-          })
+          toast.error("Error updating quiz: " + result.error)
           throw new Error(result.error)
         }
 
-        toast({
-          title: "Quiz updated",
-          description: "Your quiz has been updated successfully.",
-        })
+        toast.success("Quiz updated successfully.")
 
         router.push(`/admin/courses/${courseId}/quizzes`)
         router.refresh()
@@ -83,18 +75,11 @@ export function QuizForm({ quiz, courseId, languages }: QuizFormProps) {
         })
 
         if (result.error) {
-          toast({
-            variant: "destructive",
-            title: "Error creating quiz",
-            description: result.error,
-          })
+          toast.error("Error creating quiz: " + result.error)
           throw new Error(result.error)
         }
 
-        toast({
-          title: "Quiz created",
-          description: "Your quiz has been created successfully.",
-        })
+        toast.success("Quiz created successfully.")
 
         router.push(`/admin/courses/${courseId}/quizzes`)
         router.refresh()

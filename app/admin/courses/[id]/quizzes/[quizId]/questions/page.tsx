@@ -15,9 +15,9 @@ import { deleteQuestion } from "@/app/admin/actions";
 export default async function QuizQuestionsPage({
   params,
 }: {
-  params: { id: string; quizId: string };
+  params: Promise<{ id: string; quizId: string }>;
 }) {
-  const { id, quizId } = params;
+  const { id, quizId } = await params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
@@ -131,7 +131,9 @@ export default async function QuizQuestionsPage({
                     Edit
                   </Button>
                 </Link>
-                <form action={deleteQuestion}>
+                <form action={async (formData: FormData) => {
+                  await deleteQuestion(formData);
+                }}>
                   <input type="hidden" name="id" value={question.id} />
                   <input type="hidden" name="quizId" value={quizId} />
                   <input type="hidden" name="courseId" value={id} />

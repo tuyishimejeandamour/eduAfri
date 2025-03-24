@@ -27,7 +27,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { createCourse, updateCourse } from "@/app/admin/actions";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 // Define the form schema
 const courseFormSchema = z.object({
@@ -47,7 +47,6 @@ interface CourseFormProps {
 
 export function CourseForm({ course, languages }: CourseFormProps) {
   const router = useRouter();
-  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Default values for the form
@@ -76,16 +75,13 @@ export function CourseForm({ course, languages }: CourseFormProps) {
         });
 
         if (result.error) {
-          toast({
-            variant: "destructive",
-            title: "Error updating course",
+          toast.error("Error updating course", {
             description: result.error,
           });
           throw new Error(result.error);
         }
 
-        toast({
-          title: "Course updated",
+        toast.success("Course updated", {
           description: "Your course has been updated successfully.",
         });
 
@@ -99,16 +95,13 @@ export function CourseForm({ course, languages }: CourseFormProps) {
         });
 
         if (result.error) {
-          toast({
-            variant: "destructive",
-            title: "Error creating course",
+          toast.error("Error creating course", {
             description: result.error,
           });
           throw new Error(result.error);
         }
 
-        toast({
-          title: "Course created",
+        toast.success("Course created", {
           description: "Your course has been created successfully.",
         });
 
