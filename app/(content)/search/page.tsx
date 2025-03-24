@@ -17,7 +17,7 @@ import { Suspense } from "react";
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
   const { q } = await searchParams;
   const supabase = await getServerSupabaseClient();

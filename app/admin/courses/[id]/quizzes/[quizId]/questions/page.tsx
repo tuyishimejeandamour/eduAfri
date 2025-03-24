@@ -17,6 +17,7 @@ export default async function QuizQuestionsPage({
 }: {
   params: { id: string; quizId: string };
 }) {
+  const { id, quizId } = await params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
@@ -31,7 +32,7 @@ export default async function QuizQuestionsPage({
   const { data: quiz, error: quizError } = await supabase
     .from("content")
     .select("*")
-    .eq("id", params.quizId)
+    .eq("id", quizId)
     .eq("type", "quiz")
     .single();
 
@@ -43,7 +44,7 @@ export default async function QuizQuestionsPage({
   const { data: questions, error: questionsError } = await supabase
     .from("questions")
     .select("*")
-    .eq("quiz_id", params.quizId)
+    .eq("quiz_id", quizId)
     .order("id", { ascending: true });
 
   if (questionsError) {
@@ -63,9 +64,7 @@ export default async function QuizQuestionsPage({
 
       <div className="flex justify-between items-center mb-8">
         <p className="text-muted-foreground">Manage questions for this quiz</p>
-        <Link
-          href={`/admin/courses/${id}/quizzes/${params.quizId}/questions/create`}
-        >
+        <Link href={`/admin/courses/${id}/quizzes/${quizId}/questions/create`}>
           <Button className="flex items-center gap-2">
             <Plus className="h-4 w-4" /> Add Question
           </Button>
@@ -125,7 +124,7 @@ export default async function QuizQuestionsPage({
               </CardContent>
               <CardFooter className="flex justify-end gap-2">
                 <Link
-                  href={`/admin/courses/${id}/quizzes/${params.quizId}/questions/${question.id}/edit`}
+                  href={`/admin/courses/${id}/quizzes/${quizId}/questions/${question.id}/edit`}
                 >
                   <Button variant="outline" size="sm" className="h-8 gap-1">
                     <Edit className="h-3.5 w-3.5" />
@@ -134,7 +133,7 @@ export default async function QuizQuestionsPage({
                 </Link>
                 <form action={deleteQuestion}>
                   <input type="hidden" name="id" value={question.id} />
-                  <input type="hidden" name="quizId" value={params.quizId} />
+                  <input type="hidden" name="quizId" value={quizId} />
                   <input type="hidden" name="courseId" value={id} />
                   <Button
                     variant="outline"
@@ -154,7 +153,7 @@ export default async function QuizQuestionsPage({
               No questions found for this quiz
             </p>
             <Link
-              href={`/admin/courses/${id}/quizzes/${params.quizId}/questions/create`}
+              href={`/admin/courses/${id}/quizzes/${quizId}/questions/create`}
             >
               <Button>Add your first question</Button>
             </Link>

@@ -7,6 +7,7 @@ export default async function CreateQuizPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
