@@ -6,7 +6,6 @@ const PRECACHE_ASSETS = [
   '/',
   '/offline',
   '/downloads',
-  '/content',
   '/manifest.json',
   '/file.svg',
   '/globe.svg',
