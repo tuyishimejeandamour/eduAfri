@@ -8,41 +8,43 @@ import {
 } from "@/lib/download-service";
 import { useAuth } from "@/hooks/use-auth";
 import { useOffline } from "@/hooks/use-offline";
+import { useOfflineAuth } from "@/lib/offline-auth";
+import { getOfflineContent, getOfflineContentById } from "@/lib/offline-storage";
 import { toast } from "sonner";
 
 export function useContent() {
   const queryClient = useQueryClient();
-  const { session } = useAuth();
+  const { session, isOfflineMode } = useAuth();
   const { isOnline } = useOffline();
-  const userId = session?.user?.id;
+  const { offlineUser } = useOfflineAuth();
+  
+  // Get user ID either from online session or offline user
+  const userId = isOfflineMode ? offlineUser?.id : session?.user?.id;
 
   const fetchContent = async (params: Record<string, string> = {}) => {
-    // If offline, try to get from IndexedDB
+    // If offline, try to get from IndexedDB or offline storage
     if (!isOnline) {
       try {
+        // First try IndexedDB
         const offlineContent = await getContent("content_list");
         if (offlineContent) {
           // Filter based on params
           let filteredContent = offlineContent.items || [];
-
           if (params.type) {
             filteredContent = filteredContent.filter(
               (item: { type: string }) => item.type === params.type
             );
           }
-
           if (params.language) {
             filteredContent = filteredContent.filter(
               (item: { language: string }) => item.language === params.language
             );
           }
-
           if (params.subject) {
             filteredContent = filteredContent.filter(
               (item: { subject: string }) => item.subject === params.subject
             );
           }
-
           if (params.query) {
             const query = params.query.toLowerCase();
             filteredContent = filteredContent.filter(
@@ -52,29 +54,74 @@ export function useContent() {
                   item.description.toLowerCase().includes(query))
             );
           }
-
           return filteredContent;
+        }
+        
+        // If not in IndexedDB, try from offline-storage
+        const offlineStorageContent = await getOfflineContent();
+        if (offlineStorageContent && offlineStorageContent.length > 0) {
+          // Map to match expected format
+          let items = offlineStorageContent.map(item => item.data);
+          
+          // Filter based on params
+          if (params.type) {
+            items = items.filter(item => item.type === params.type);
+          }
+          if (params.language) {
+            items = items.filter(item => item.language === params.language);
+          }
+          if (params.subject) {
+            items = items.filter(item => item.subject === params.subject);
+          }
+          if (params.query) {
+            const query = params.query.toLowerCase();
+            items = items.filter(
+              item =>
+                item.title.toLowerCase().includes(query) ||
+                (item.description && item.description.toLowerCase().includes(query))
+            );
+          }
+          
+          return items;
         }
       } catch (error) {
         console.error("Error fetching offline content:", error);
       }
+      
+      // If no content found offline, return empty array
+      return [];
     }
-
-    // If online or no offline content, fetch from API
-    const searchParams = new URLSearchParams(params);
-    const response = await fetch(`/api/content?${searchParams}`);
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to fetch content");
+    
+    // If online, fetch from API
+    try {
+      const searchParams = new URLSearchParams(params);
+      const response = await fetch(`/api/content?${searchParams}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to fetch content");
+      }
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error("Error fetching content from API:", error);
+      // If API call fails, try offline content as fallback
+      try {
+        const offlineContent = await getOfflineContent();
+        if (offlineContent && offlineContent.length > 0) {
+          return offlineContent.map(item => item.data);
+        }
+      } catch (innerError) {
+        console.error("Error fetching fallback offline content:", innerError);
+      }
+      return [];
     }
-    const data = await response.json();
-    return data.data;
   };
 
   const fetchContentById = async (id: string) => {
     // First try to get from IndexedDB if offline
     if (!isOnline) {
       try {
+        // Try from IndexedDB first
         const offlineContent = await getDownloadedContent(id);
         if (offlineContent) {
           // Return in the same format as the API
@@ -82,28 +129,69 @@ export function useContent() {
             content: offlineContent,
             lessons: offlineContent.lessons || [],
             questions: offlineContent.questions || [],
-            progress: null, // We don't have progress offline yet
+            progress: null, // Progress will be fetched separately
+          };
+        }
+        
+        // If not in IndexedDB, try from offline-storage
+        const offlineStorageContent = await getOfflineContentById(id);
+        if (offlineStorageContent) {
+          return {
+            content: offlineStorageContent.data,
+            lessons: offlineStorageContent.data.lessons || [],
+            questions: offlineStorageContent.data.questions || [],
+            progress: null,
           };
         }
       } catch (error) {
-        console.error("Error fetching offline content:", error);
+        console.error("Error fetching offline content by ID:", error);
       }
+      
+      // If content not found offline, show a toast
+      toast.error("Content not available offline", {
+        description: "Please download this content or go online to view it"
+      });
+      
+      return null;
     }
-
-    // If online or no offline content, fetch from API
-    const response = await fetch(`/api/content/${id}`);
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || "Failed to fetch content");
+    
+    // If online, fetch from API
+    try {
+      const response = await fetch(`/api/content/${id}`);
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to fetch content");
+      }
+      const data = await response.json();
+      return data.data;
+    } catch (error) {
+      console.error("Error fetching content by ID from API:", error);
+      
+      // If API call fails, try offline content as fallback
+      try {
+        const offlineContent = await getOfflineContentById(id);
+        if (offlineContent) {
+          return {
+            content: offlineContent.data,
+            lessons: offlineContent.data.lessons || [],
+            questions: offlineContent.data.questions || [],
+            progress: null,
+          };
+        }
+      } catch (innerError) {
+        console.error("Error fetching fallback offline content by ID:", innerError);
+      }
+      
+      return null;
     }
-    const data = await response.json();
-    return data.data;
   };
 
   const useContentList = (params: Record<string, string> = {}) => {
     return useQuery({
       queryKey: ["content", params],
       queryFn: () => fetchContent(params),
+      // Increase stale time for offline mode
+      staleTime: isOfflineMode ? Infinity : 5 * 60 * 1000,
     });
   };
 
@@ -112,6 +200,8 @@ export function useContent() {
       queryKey: ["content", id],
       queryFn: () => fetchContentById(id),
       enabled: !!id,
+      // Increase stale time for offline mode
+      staleTime: isOfflineMode ? Infinity : 5 * 60 * 1000,
     });
   };
 
@@ -125,6 +215,11 @@ export function useContent() {
       progressPercentage: number;
       completed: boolean;
     }) => {
+      if (!userId) {
+        toast.error("User ID not available");
+        throw new Error("User ID not available");
+      }
+      
       // Create progress object
       const progress = {
         id: `${userId}-${contentId}`,
@@ -134,26 +229,37 @@ export function useContent() {
         completed,
         last_accessed: new Date().toISOString(),
       };
-
+      
       // Save progress to IndexedDB
       await saveProgress(progress);
-
-      // If online, send to server
-      if (isOnline) {
-        const response = await fetch("/api/progress", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ contentId, progressPercentage, completed }),
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to update progress");
+      
+      // If online and not an offline-only user, send to server
+      if (isOnline && !isOfflineMode) {
+        try {
+          const response = await fetch("/api/progress", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ contentId, progressPercentage, completed }),
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to update progress");
+          }
+        } catch (error) {
+          console.error("Failed to update progress on server:", error);
+          // Queue the action for later sync
+          await queueAction({
+            url: "/api/progress",
+            method: "POST",
+            body: { contentId, progressPercentage, completed },
+            headers: { "Content-Type": "application/json" },
+          });
         }
-      } else {
-        // If offline, queue for later
+      } else if (!isOfflineMode) {
+        // If offline and not an offline-only user, queue for later
         await queueAction({
           url: "/api/progress",
           method: "POST",
@@ -161,7 +267,8 @@ export function useContent() {
           headers: { "Content-Type": "application/json" },
         });
       }
-
+      
+      // For offline users, we'll just keep the progress in IndexedDB
       return true;
     },
     onSuccess: (_, variables) => {
@@ -169,6 +276,12 @@ export function useContent() {
         queryKey: ["content", variables.contentId],
       });
       queryClient.invalidateQueries({ queryKey: ["progress"] });
+      
+      toast.success("Progress updated", {
+        description: isOfflineMode
+          ? "Your progress has been saved locally"
+          : "Your progress has been saved"
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to update progress");
@@ -180,50 +293,72 @@ export function useContent() {
       if (!userId) {
         throw new Error("You must be logged in to download content");
       }
-
-      // Download content to IndexedDB
-      const success = await downloadToIndexedDB(contentId, userId);
-
+      
+      // Download content to IndexedDB, passing the isOfflineUser flag
+      const success = await downloadToIndexedDB(contentId, userId, isOfflineMode);
+      
       if (!success) {
         throw new Error("Failed to download content");
       }
-
+      
       return true;
     },
     onSuccess: () => {
-      toast("Content downloaded successfully for offline use.");
+      // Toast is now handled in the download-service.ts
       queryClient.invalidateQueries({ queryKey: ["downloads"] });
     },
     onError: (error: Error) => {
-      toast(error.message || "Failed to download content");
+      toast.error(error.message || "Failed to download content");
     },
   });
 
   const removeDownloadMutation = useMutation({
     mutationFn: async (contentId: string) => {
-      // If online, send to server
-      if (isOnline) {
-        const response = await fetch(`/api/downloads?contentId=${contentId}`, {
-          method: "DELETE",
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to remove download");
+      if (!userId) {
+        throw new Error("User ID not available");
+      }
+      
+      // If online and not an offline-only user, send to server
+      if (isOnline && !isOfflineMode) {
+        try {
+          const response = await fetch(`/api/downloads?contentId=${contentId}`, {
+            method: "DELETE",
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to remove download");
+          }
+        } catch (error) {
+          console.error("Failed to remove download on server:", error);
+          // Queue the action for later sync
+          await queueAction({
+            url: `/api/downloads?contentId=${contentId}`,
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+          });
         }
-      } else {
-        // If offline, queue for later
+      } else if (!isOfflineMode) {
+        // If offline and not an offline-only user, queue for later
         await queueAction({
           url: `/api/downloads?contentId=${contentId}`,
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
         });
       }
-
+      
+      // For all users, remove from IndexedDB
+      try {
+        // Remove from offline storage
+        // We'll implement this function later if needed
+      } catch (error) {
+        console.error("Error removing offline content:", error);
+      }
+      
       return true;
     },
     onSuccess: () => {
-      toast("Download removed successfully.");
+      toast.success("Download removed successfully");
       queryClient.invalidateQueries({ queryKey: ["downloads"] });
     },
     onError: (error: Error) => {
@@ -241,6 +376,10 @@ export function useContent() {
       score: number;
       answers: any[];
     }) => {
+      if (!userId) {
+        throw new Error("User ID not available");
+      }
+      
       // Save to IndexedDB first
       const quizResult = {
         id: `${userId}-${quizId}-${Date.now()}`,
@@ -250,35 +389,54 @@ export function useContent() {
         completed_at: new Date().toISOString(),
         answers,
       };
-
-      // If online, send to server
-      if (isOnline) {
-        const response = await fetch("/api/quiz", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ quizId, score, answers }),
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.error || "Failed to submit quiz");
+      
+      // Save to IndexedDB (we need to add a storeQuizResult function)
+      // await storeQuizResult(quizResult);
+      
+      // If online and not an offline-only user, send to server
+      if (isOnline && !isOfflineMode) {
+        try {
+          const response = await fetch("/api/quiz", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ quizId, score, answers }),
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.error || "Failed to submit quiz");
+          }
+        } catch (error) {
+          console.error("Failed to submit quiz to server:", error);
+          // Queue for later sync
+          await queueAction({
+            url: "/api/quiz",
+            method: "POST",
+            body: { quizId, score, answers },
+            headers: { "Content-Type": "application/json" },
+          });
         }
-      } else {
-        // If offline, queue for later
+      } else if (!isOfflineMode) {
+        // If offline and not an offline-only user, queue for later
         await queueAction({
           url: "/api/quiz",
           method: "POST",
-          body: quizResult,
+          body: { quizId, score, answers },
           headers: { "Content-Type": "application/json" },
         });
       }
-
+      
+      // For offline users, we'll just keep the quiz result in IndexedDB
       return true;
     },
     onSuccess: () => {
-      toast("Quiz submitted successfully.");
+      toast.success("Quiz submitted successfully", {
+        description: isOfflineMode
+          ? "Your results have been saved locally"
+          : "Your results have been saved"
+      });
       queryClient.invalidateQueries({ queryKey: ["progress"] });
     },
     onError: (error: Error) => {

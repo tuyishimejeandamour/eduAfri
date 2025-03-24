@@ -1,165 +1,184 @@
-const CACHE_NAME = "eduafri-cache-v1"
-const OFFLINE_URL = "/offline"
+const CACHE_NAME = 'eduafri-offline-v1';
+const OFFLINE_URL = '/offline';
+const DOWNLOADS_URL = '/downloads';
 
-// Assets to cache immediately on install
 const PRECACHE_ASSETS = [
-  "/",
-  "/offline",
-  "/dashboard",
-  "/courses",
-  "/auth",
-  "/manifest.json",
-  "/favicon.ico",
-  "/globals.css",
-]
+  '/',
+  '/offline',
+  '/downloads',
+  '/content',
+  '/manifest.json',
+  '/file.svg',
+  '/globe.svg',
+  '/window.svg',
+];
 
-// Install event - precache key resources
-self.addEventListener("install", (event) => {
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => {
-        console.log("Opened cache")
-        return cache.addAll(PRECACHE_ASSETS)
-      })
-      .then(() => self.skipWaiting()),
-  )
-})
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      // Precache core assets
+      await cache.addAll(PRECACHE_ASSETS);
+      // Activate immediately
+      await self.skipWaiting();
+    })()
+  );
+});
 
-// Activate event - clean up old caches
-self.addEventListener("activate", (event) => {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames
-            .filter((cacheName) => {
-              return cacheName !== CACHE_NAME
-            })
-            .map((cacheName) => {
-              return caches.delete(cacheName)
-            }),
-        )
-      })
-      .then(() => self.clients.claim()),
-  )
-})
-
-// Fetch event - serve from cache or network
-self.addEventListener("fetch", (event) => {
-  // Skip non-GET requests and browser extensions
-  if (event.request.method !== "GET" || !event.request.url.startsWith(self.location.origin)) {
-    return
-  }
-
-  // Handle API requests differently - don't cache by default
-  if (event.request.url.includes("/api/")) {
-    return handleApiRequest(event)
-  }
-
-  // For page navigations, try network first, then cache
-  if (event.request.mode === "navigate") {
-    return event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(event.request).then((response) => {
-          if (response) {
-            return response
+    (async () => {
+      // Clean up old caches
+      const keys = await caches.keys();
+      await Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
           }
-          // If both network and cache fail, show offline page
-          return caches.match(OFFLINE_URL)
         })
-      }),
-    )
-  }
+      );
+      // Take control of all pages immediately
+      await clients.claim();
+    })()
+  );
+});
 
-  // For other requests (assets, etc.), try cache first, then network
+self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+
+      // Special handling for auth-related requests when offline
+      if (!navigator.onLine && event.request.url.includes('/api/auth/')) {
+        // Return empty successful response for auth checks when offline
+        return new Response(JSON.stringify({ data: null }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
       }
 
-      // Clone the request because it's a one-time use stream
-      const fetchRequest = event.request.clone()
+      // Try to get the response from the network first
+      try {
+        const networkResponse = await fetch(event.request);
+        
+        // Cache successful GET responses
+        if (event.request.method === 'GET') {
+          await cache.put(event.request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+      } catch (error) {
+        // If network request fails, try to get it from cache
+        const cachedResponse = await cache.match(event.request);
+        
+        if (cachedResponse) {
+          return cachedResponse;
+        }
 
-      return fetch(fetchRequest)
-        .then((response) => {
-          // Check if we received a valid response
-          if (!response || response.status !== 200 || response.type !== "basic") {
-            return response
+        // If the request is for a page (HTML)
+        if (event.request.mode === 'navigate') {
+          // If it's the downloads page or any downloaded content, return it from cache
+          if (event.request.url.includes(DOWNLOADS_URL) || await isDownloadedContent(event.request.url)) {
+            const cachedPage = await cache.match(event.request);
+            if (cachedPage) {
+              return cachedPage;
+            }
           }
-
-          // Clone the response because it's a one-time use stream
-          const responseToCache = response.clone()
-
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache)
-          })
-
-          return response
-        })
-        .catch(() => {
-          // If both cache and network fail for assets, return offline fallback
-          if (event.request.destination === "image") {
-            return caches.match("/placeholder.svg")
+          
+          // For other pages, return the offline page
+          const offlineResponse = await cache.match(OFFLINE_URL);
+          if (offlineResponse) {
+            return offlineResponse;
           }
-          return new Response("Network error occurred", { status: 408 })
-        })
-    }),
-  )
-})
+        }
 
-// Handle API requests
-function handleApiRequest(event) {
-  // For API requests, try network first
-  event.respondWith(
-    fetch(event.request).catch(() => {
-      // If network fails, check if this is a GET request we can serve from cache
-      if (event.request.method === "GET") {
-        return caches.match(event.request)
+        // If nothing found in cache, fail
+        throw error;
       }
-
-      // For failed non-GET API requests, queue them for later
-      return queueFailedRequest(event.request.clone()).then(() => {
-        // Return a response indicating the request was queued
-        return new Response(
-          JSON.stringify({
-            success: false,
-            error: "You are offline. Request has been queued for when you are back online.",
-          }),
-          {
-            headers: { "Content-Type": "application/json" },
-            status: 503,
-          },
-        )
-      })
-    }),
-  )
-}
-
-// Queue failed requests for later processing
-async function queueFailedRequest(request) {
-  // We'll implement this with IndexedDB in the main app
-  // For now, just post a message to the client
-  const clients = await self.clients.matchAll()
-  clients.forEach((client) => {
-    client.postMessage({
-      type: "QUEUE_REQUEST",
-      request: {
-        url: request.url,
-        method: request.method,
-        headers: Array.from(request.headers.entries()),
-        body: request.body, // Note: this might not work directly, we'll handle it in the app
-      },
-    })
-  })
-}
+    })()
+  );
+});
 
 // Listen for messages from the client
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting()
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'CACHE_DOWNLOAD_CONTENT') {
+    // Cache the download content and its assets
+    event.waitUntil(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const download = event.data.download;
+        
+        // Add the content URL to cache if it exists
+        if (download.url) {
+          try {
+            const response = await fetch(download.url);
+            await cache.put(download.url, response);
+          } catch (error) {
+            console.error('Failed to cache download content:', error);
+          }
+        }
+        
+        // Cache any associated assets (images, etc.)
+        if (download.assets && Array.isArray(download.assets)) {
+          await Promise.all(
+            download.assets.map(async (asset) => {
+              try {
+                const response = await fetch(asset);
+                await cache.put(asset, response);
+              } catch (error) {
+                console.error('Failed to cache asset:', error);
+              }
+            })
+          );
+        }
+      })()
+    );
   }
-})
+
+  if (event.data && event.data.type === 'DOWNLOADS_CLEARED') {
+    // Clear all cached downloads
+    event.waitUntil(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const keys = await cache.keys();
+        await Promise.all(
+          keys.map(async (request) => {
+            // Only delete cached downloads, not core assets
+            if (!PRECACHE_ASSETS.includes(request.url)) {
+              await cache.delete(request);
+            }
+          })
+        );
+      })()
+    );
+  }
+  
+  if (event.data && event.data.type === 'CHECK_DOWNLOADS') {
+    // Check if we have any downloads cached
+    event.waitUntil(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const keys = await cache.keys();
+        const hasDownloads = keys.some(request => 
+          !PRECACHE_ASSETS.includes(request.url)
+        );
+        
+        // Notify all clients about the download status
+        const clients = await self.clients.matchAll();
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'HAS_DOWNLOADS',
+            hasDownloads
+          });
+        });
+      })()
+    );
+  }
+});
+
+async function isDownloadedContent(url) {
+  const cache = await caches.open(CACHE_NAME);
+  const keys = await cache.keys();
+  return keys.some(request => request.url === url);
+}
 

@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
+import { useOfflineAuth } from "@/lib/offline-auth";
+import { useOffline } from "@/hooks/use-offline";
 import { toast } from "sonner";
 
 export function useAuth() {
@@ -11,19 +13,42 @@ export function useAuth() {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
+  const { isOnline } = useOffline();
+  const { isOfflineAuthenticated, offlineUser } = useOfflineAuth();
 
   const { data: session } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
+      if (!isOnline) return null;
       const { data } = await supabase.auth.getSession();
       return data.session;
     },
+    enabled: isOnline, // Only run this query when online
   });
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      if (!session) return null;
+      if (!isOnline || !session) {
+        // If offline or no session, return offline user profile if available
+        if (isOfflineAuthenticated && offlineUser) {
+          return {
+            user: {
+              id: offlineUser.id,
+              email: offlineUser.email,
+            },
+            profile: {
+              id: offlineUser.id,
+              username: offlineUser.username || offlineUser.email.split("@")[0],
+              full_name: offlineUser.username,
+              avatar_url: null,
+            },
+          };
+        }
+        return null;
+      }
+      
+      // Otherwise fetch online profile
       const response = await fetch("/api/auth/profile");
       if (!response.ok) {
         throw new Error("Failed to fetch profile");
@@ -31,7 +56,7 @@ export function useAuth() {
       const data = await response.json();
       return data.data;
     },
-    enabled: !!session,
+    enabled: !!session || isOfflineAuthenticated,
   });
 
   const signInMutation = useMutation({
@@ -97,12 +122,17 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to log out");
+      // For online users, sign out from Supabase
+      if (isOnline && session) {
+        const response = await fetch("/api/auth/logout", {
+          method: "POST",
+        });
+        if (!response.ok) {
+          throw new Error("Failed to log out");
+        }
       }
+      
+      // For offline users, we'll rely on the OfflineAuthProvider to handle logout
       return true;
     },
     onSuccess: () => {
@@ -117,7 +147,11 @@ export function useAuth() {
   });
 
   const updateProfileMutation = useMutation({
-    mutationFn: async (profileData: Error) => {
+    mutationFn: async (profileData: any) => {
+      if (!isOnline) {
+        throw new Error("You need to be online to update your profile");
+      }
+      
       const response = await fetch("/api/auth/profile", {
         method: "PUT",
         headers: {
@@ -140,11 +174,15 @@ export function useAuth() {
     },
   });
 
+  // In offline mode, we'll consider the user authenticated by default
+  const isAuthenticated = isOnline ? !!session : true;
+
   return {
     session,
     profile,
     loading,
-    isAuthenticated: !!session,
+    isAuthenticated,
+    isOfflineMode: !isOnline,
     signIn: (email: string, password: string) =>
       signInMutation.mutate({ email, password }),
     signUp: (email: string, password: string) =>

@@ -5,9 +5,10 @@ import type React from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { queryClient } from "@/lib/tanstack-query";
-import { ServiceWorkerRegistration } from "@/components/service-worker";
+import { ServiceWorker } from "@/components/service-worker";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "./ui/sonner";
+import { OfflineAuthProvider } from "@/lib/offline-auth";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -18,9 +19,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         enableSystem
         disableTransitionOnChange
       >
-        {children}
-        <Toaster />
-        <ServiceWorkerRegistration />
+        <OfflineAuthProvider>
+          {children}
+          <Toaster />
+          <ServiceWorker />
+        </OfflineAuthProvider>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

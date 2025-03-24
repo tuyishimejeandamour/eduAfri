@@ -9,7 +9,7 @@ const isIndexedDBAvailable = () => {
 
 // Database configuration
 const DB_NAME = "eduafri-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORES = {
   CONTENT: "content",
   PROGRESS: "progress",
@@ -17,63 +17,88 @@ const STORES = {
   ACTION_QUEUE: "actionQueue",
 };
 
-// Initialize the database with error handling
+// Initialize the database with better error handling and retry logic
 export async function initDB(): Promise<IDBDatabase | null> {
   if (!isIndexedDBAvailable()) {
     console.warn("IndexedDB is not available in this browser");
     return null;
   }
 
-  return new Promise((resolve) => {
+  let retryCount = 0;
+  const maxRetries = 3;
+  
+  while (retryCount < maxRetries) {
     try {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-      request.onerror = (event) => {
-        console.error("IndexedDB error:", event);
-        resolve(null); // Resolve with null instead of rejecting
-      };
-
-      request.onsuccess = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        resolve(db);
-      };
-
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-
-        // Create object stores if they don't exist
-        if (!db.objectStoreNames.contains(STORES.CONTENT)) {
-          db.createObjectStore(STORES.CONTENT, { keyPath: "id" });
-        }
-
-        if (!db.objectStoreNames.contains(STORES.PROGRESS)) {
-          db.createObjectStore(STORES.PROGRESS, { keyPath: "id" });
-        }
-
-        if (!db.objectStoreNames.contains(STORES.DOWNLOADS)) {
-          const downloadStore = db.createObjectStore(STORES.DOWNLOADS, {
-            keyPath: "id",
-          });
-          downloadStore.createIndex("content_id", "content_id", {
-            unique: true,
-          });
-          downloadStore.createIndex("user_id", "user_id", { unique: false });
-        }
-
-        if (!db.objectStoreNames.contains(STORES.ACTION_QUEUE)) {
-          const queueStore = db.createObjectStore(STORES.ACTION_QUEUE, {
-            keyPath: "id",
-            autoIncrement: true,
-          });
-          queueStore.createIndex("status", "status", { unique: false });
-          queueStore.createIndex("timestamp", "timestamp", { unique: false });
-        }
-      };
+      return await new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = (event) => {
+          console.error("IndexedDB error:", event);
+          resolve(null);
+        };
+        
+        request.onblocked = (event) => {
+          console.warn("IndexedDB blocked. Please close other tabs with this site open.");
+          resolve(null);
+        };
+        
+        request.onsuccess = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          
+          db.onerror = (event) => {
+            console.error("Database error:", event);
+          };
+          
+          resolve(db);
+        };
+        
+        request.onupgradeneeded = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          
+          if (!db.objectStoreNames.contains(STORES.CONTENT)) {
+            db.createObjectStore(STORES.CONTENT, { keyPath: "id" });
+          }
+          
+          if (!db.objectStoreNames.contains(STORES.PROGRESS)) {
+            db.createObjectStore(STORES.PROGRESS, { keyPath: "id" });
+          }
+          
+          if (!db.objectStoreNames.contains(STORES.DOWNLOADS)) {
+            const downloadStore = db.createObjectStore(STORES.DOWNLOADS, {
+              keyPath: "id",
+            });
+            downloadStore.createIndex("content_id", "content_id", {
+              unique: true,
+            });
+            downloadStore.createIndex("user_id", "user_id", { unique: false });
+          }
+          
+          if (!db.objectStoreNames.contains(STORES.ACTION_QUEUE)) {
+            const queueStore = db.createObjectStore(STORES.ACTION_QUEUE, {
+              keyPath: "id",
+              autoIncrement: true,
+            });
+            queueStore.createIndex("status", "status", { unique: false });
+            queueStore.createIndex("timestamp", "timestamp", { unique: false });
+          }
+          
+          if (!db.objectStoreNames.contains('offline_users')) {
+            db.createObjectStore('offline_users', { keyPath: "id" });
+          }
+        };
+      });
     } catch (error) {
-      console.error("Error initializing IndexedDB:", error);
-      resolve(null);
+      console.error(`Error initializing IndexedDB (attempt ${retryCount + 1}/${maxRetries}):`, error);
+      retryCount++;
+      
+      if (retryCount < maxRetries) {
+        await new Promise(resolve => setTimeout(resolve, 500 * retryCount));
+      }
     }
-  });
+  }
+  
+  console.error(`Failed to initialize IndexedDB after ${maxRetries} attempts`);
+  return null;
 }
 
 // Generic function to add an item to a store
@@ -375,6 +400,23 @@ export async function clearAllDownloads(): Promise<boolean> {
   return clearStore(STORES.DOWNLOADS);
 }
 
+// Add this new function
+export async function getDownloadCount(): Promise<number> {
+  const db = await initDB();
+  if (!db) {
+    console.warn("IndexedDB not available, cannot get download count");
+    return 0;
+  }
+  const tx = db.transaction('downloads', 'readonly');
+  const store = tx.objectStore('downloads');
+  return new Promise<number>((resolve) => {
+    const countRequest = store.count();
+    countRequest.onsuccess = () => resolve(countRequest.result);
+    countRequest.onerror = () => resolve(0);
+  });
+    
+}
+
 // Progress functions
 export async function saveProgress(progress: any): Promise<any> {
   return updateItem(STORES.PROGRESS, progress);
@@ -426,11 +468,38 @@ export async function queueAction(
 }
 
 export async function getPendingActions(): Promise<QueuedAction[]> {
-  return getItemsByIndex<QueuedAction>(
-    STORES.ACTION_QUEUE,
-    "status",
-    "pending"
-  );
+  try {
+    const db = await initDB();
+    
+    if (!db) {
+      console.warn("IndexedDB not available, cannot get pending actions");
+      return [];
+    }
+    
+    // First check if the action queue store exists
+    if (!db.objectStoreNames.contains(STORES.ACTION_QUEUE)) {
+      console.warn("Action queue store doesn't exist yet");
+      return [];
+    }
+    
+    // Try using the index first
+    try {
+      return await getItemsByIndex<QueuedAction>(
+        STORES.ACTION_QUEUE,
+        "status",
+        "pending"
+      );
+    } catch (indexError) {
+      console.warn("Error using status index, falling back to getAllItems", indexError);
+      
+      // If index fails, fallback to get all items and filter manually
+      const allActions = await getAllItems<QueuedAction>(STORES.ACTION_QUEUE);
+      return allActions.filter(action => action.status === "pending");
+    }
+  } catch (error) {
+    console.error("Failed to get pending actions:", error);
+    return [];
+  }
 }
 
 export async function updateActionStatus(

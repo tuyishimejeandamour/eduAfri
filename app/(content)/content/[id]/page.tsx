@@ -36,11 +36,15 @@ export default function ContentPage() {
   const { data, isLoading } = useContentDetail(id);
   const [isDownloaded, setIsDownloaded] = useState(false);
 
+  // Only redirect to auth if online and not authenticated
   useEffect(() => {
+    if (!isOnline) {
+      return; // Don't redirect when offline
+    }
     if (!isAuthenticated) {
       router.push("/auth");
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, isOnline]);
 
   // Check if content is downloaded
   useEffect(() => {
@@ -124,7 +128,7 @@ export default function ContentPage() {
                 size="sm"
                 onClick={handleDownload}
                 className="flex items-center gap-2"
-                disabled={!isOnline && !isDownloaded}
+                disabled={!isOnline}
               >
                 <Download className="h-4 w-4" /> Download
               </Button>

@@ -14,6 +14,7 @@ export function useOffline() {
   const [pendingActions, setPendingActions] = useState(0);
 
   const isMounted = useRef(true);
+  const initDone = useRef(false);
 
   useEffect(() => {
     return () => {
@@ -25,10 +26,20 @@ export function useOffline() {
   useEffect(() => {
     if (!isBrowser) return;
 
+    // Avoid running multiple times
+    if (initDone.current) return;
+    initDone.current = true;
+
     const checkPendingActions = async () => {
       try {
         if (!isMounted.current) return;
+
+        // Add a small delay to let IndexedDB initialize properly
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
         const actions = await getPendingActions();
+
+        if (!isMounted.current) return;
         setPendingActions(actions.length);
       } catch (error) {
         console.error("Error checking pending actions:", error);
@@ -36,6 +47,23 @@ export function useOffline() {
     };
 
     checkPendingActions();
+
+    // Set up interval to check for pending actions
+    const intervalId = setInterval(async () => {
+      if (!isMounted.current) return;
+
+      try {
+        const actions = await getPendingActions();
+        if (!isMounted.current) return;
+        setPendingActions(actions.length);
+      } catch (error) {
+        console.error("Error checking pending actions in interval:", error);
+      }
+    }, 30000); // Check every 30 seconds
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, [isBrowser]);
 
   // Function to sync data when back online
@@ -131,7 +159,13 @@ export function useOffline() {
       toast.success("You're back online", {
         description: "Syncing your changes...",
       });
-      syncData();
+
+      // Add a small delay before syncing to ensure browser is really online
+      setTimeout(() => {
+        if (isMounted.current) {
+          syncData();
+        }
+      }, 1000);
     };
 
     const handleOffline = () => {

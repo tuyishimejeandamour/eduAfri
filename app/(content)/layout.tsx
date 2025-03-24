@@ -17,6 +17,7 @@ import { AnnouncementBar } from "@/components/announcement-bar";
 import { MegaMenu } from "@/components/mega-menu";
 import { SiteFooter } from "@/components/site-footer";
 import { OfflineBanner } from "@/components/offline-banner";
+import { NavigationSidebar } from "@/components/navigation/navigation-sidebar";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -134,3 +135,21 @@ function MobileNav({ className }: { className?: string }) {
     </nav>
   );
 }
+
+// export default function ContentLayout({
+//   children,
+// }: {
+//   children: React.ReactNode
+// }) {
+//   return (
+//     <div className="flex">
+//       <NavigationSidebar />
+//       <main className="flex-1 h-[calc(100vh-3rem)]">
+//         <OfflineBanner />
+//         <div className="container py-6">
+//           {children}
+//         </div>
+//       </main>
+//     </div>
+//   )
+// }

@@ -6,60 +6,141 @@ import {
   getContent,
   getDownloadByContentId,
   queueAction,
+  getAllDownloads,
 } from "./indexeddb";
+import { saveOfflineContent } from "./offline-storage";
+import { toast } from "sonner";
 
-// Function to download content and store it in IndexedDB
+/**
+ * Download content and store it in IndexedDB
+ * @param contentId ID of the content to download
+ * @param userId ID of the user downloading the content
+ * @param isOfflineUser Whether the user is authenticated offline
+ * @returns Promise resolving to true if download was successful
+ */
 export async function downloadContent(
   contentId: string,
-  userId: string
+  userId: string,
+  isOfflineUser: boolean = false
 ): Promise<boolean> {
   try {
     // First check if we already have this content downloaded
     const existingDownload = await getDownloadByContentId(contentId);
     if (existingDownload) {
-      console.log("Content already downloaded:", contentId);
+      toast.info("Content already available for offline use");
       return true;
     }
+
+    // Show a loading toast
+    const toastId = toast.loading("Downloading content for offline use...");
 
     // Fetch the content details
     const contentResponse = await fetch(`/api/content/${contentId}`);
     if (!contentResponse.ok) {
+      toast.error("Failed to download content", {
+        id: toastId,
+        description: "Could not retrieve content data from server"
+      });
       throw new Error("Failed to fetch content");
     }
 
     const contentData = await contentResponse.json();
     const { content, lessons, questions } = contentData.data;
 
-    // Save the main content
+    // Save the main content to IndexedDB
     await saveContent(content);
 
-    // Save related content (lessons or questions)
-    if (lessons && lessons.length > 0) {
+    // Also save to offline-storage for future use
+    await saveOfflineContent({
+      id: content.id,
+      title: content.title,
+      type: content.type,
+      data: content,
+      userId: userId,
+    });
+
+    // For courses, download all related lessons and their quizzes
+    if (content.type === "course" && lessons && lessons.length > 0) {
+      toast.loading("Downloading related lessons...", { id: toastId });
+      
       for (const lesson of lessons) {
+        // Save lesson content
         await saveContent(lesson);
+        await saveOfflineContent({
+          id: lesson.id,
+          title: lesson.title,
+          type: lesson.type,
+          data: lesson,
+          userId: userId,
+        });
+
+        // Create download record for lesson
+        const lessonDownload = {
+          id: `${userId}-${lesson.id}`,
+          user_id: userId,
+          content_id: lesson.id,
+          downloaded_at: new Date().toISOString(),
+          size_bytes: 2 * 1024 * 1024, // 2MB for lessons
+          content: lesson,
+        };
+        await saveDownload(lessonDownload);
+
+        // If the lesson has a quiz, download it too
+        if (lesson.quiz_id) {
+          const quizResponse = await fetch(`/api/content/${lesson.quiz_id}`);
+          if (quizResponse.ok) {
+            const quizData = await quizResponse.json();
+            const quiz = quizData.data.content;
+            const questions = quizData.data.questions;
+
+            // Save quiz with its questions
+            quiz.questions = questions;
+            await saveContent(quiz);
+            await saveOfflineContent({
+              id: quiz.id,
+              title: quiz.title,
+              type: "quiz",
+              data: quiz,
+              userId: userId,
+            });
+
+            // Create download record for quiz
+            const quizDownload = {
+              id: `${userId}-${quiz.id}`,
+              user_id: userId,
+              content_id: quiz.id,
+              downloaded_at: new Date().toISOString(),
+              size_bytes: 1 * 1024 * 1024, // 1MB for quizzes
+              content: quiz,
+            };
+            await saveDownload(quizDownload);
+          }
+        }
       }
     }
 
-    if (questions && questions.length > 0) {
-      // Save questions as part of the content object
+    // If this is a quiz, save its questions
+    if (content.type === "quiz" && questions && questions.length > 0) {
       content.questions = questions;
       await saveContent(content);
     }
 
-    // Calculate size (simplified)
+    // Calculate total size
     let sizeBytes = 0;
     switch (content.type) {
       case "course":
-        sizeBytes = 5 * 1024 * 1024; // 5 MB
+        sizeBytes = 5 * 1024 * 1024 + // Base course size
+          (lessons?.length || 0) * 2 * 1024 * 1024 + // Lessons size
+          (lessons?.filter((l: { quiz_id?: string }) => l.quiz_id)?.length || 0) * 1 * 1024 * 1024; // Quizzes size
         break;
       case "lesson":
-        sizeBytes = 2 * 1024 * 1024; // 2 MB
+        sizeBytes = 2 * 1024 * 1024;
         break;
       case "quiz":
-        sizeBytes = 1 * 1024 * 1024; // 1 MB
+        sizeBytes = 1 * 1024 * 1024;
         break;
       default:
-        sizeBytes = 1 * 1024 * 1024; // 1 MB
+        sizeBytes = 1 * 1024 * 1024;
     }
 
     // Record the download in IndexedDB
@@ -69,23 +150,38 @@ export async function downloadContent(
       content_id: contentId,
       downloaded_at: new Date().toISOString(),
       size_bytes: sizeBytes,
-      content: content, // Include the content for offline access
+      content: content,
     };
-
     await saveDownload(download);
 
-    // Try to record the download on the server
-    try {
-      const response = await fetch("/api/downloads", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ contentId, sizeBytes }),
-      });
+    toast.success("Content downloaded successfully", {
+      id: toastId,
+      description: content.type === "course" 
+        ? "Course and all related content is now available offline" 
+        : "Now available for offline use"
+    });
 
-      if (!response.ok) {
-        // If server request fails, queue it for later
+    // For online users, sync with server
+    if (!isOfflineUser) {
+      try {
+        const response = await fetch("/api/downloads", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ contentId, sizeBytes }),
+        });
+        
+        if (!response.ok) {
+          await queueAction({
+            url: "/api/downloads",
+            method: "POST",
+            body: { contentId, sizeBytes },
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+      } catch (_error) {
+        console.error("Failed to record download on server:", _error);
         await queueAction({
           url: "/api/downloads",
           method: "POST",
@@ -93,25 +189,23 @@ export async function downloadContent(
           headers: { "Content-Type": "application/json" },
         });
       }
-    } catch (_error) {
-      console.error("Failed to record download on server:", _error);
-      // If offline, queue the action for later
-      await queueAction({
-        url: "/api/downloads",
-        method: "POST",
-        body: { contentId, sizeBytes },
-        headers: { "Content-Type": "application/json" },
-      });
     }
 
     return true;
   } catch (error) {
     console.error("Error downloading content:", error);
+    toast.error("Download failed", {
+      description: "There was a problem downloading this content"
+    });
     return false;
   }
 }
 
-// Function to get downloaded content from IndexedDB
+/**
+ * Get downloaded content from IndexedDB
+ * @param contentId ID of the content to retrieve
+ * @returns Promise resolving to the content data or null
+ */
 export async function getDownloadedContent(
   contentId: string
 ): Promise<any | null> {
@@ -128,5 +222,36 @@ export async function getDownloadedContent(
   } catch (error) {
     console.error("Error getting downloaded content:", error);
     return null;
+  }
+}
+
+/**
+ * Get all downloads for a specific user
+ * @param userId ID of the user
+ * @returns Promise resolving to an array of downloads
+ */
+export async function getUserDownloads(userId: string): Promise<any[]> {
+  try {
+    const allDownloads = await getAllDownloads();
+    return allDownloads.filter(download => download.user_id === userId);
+  } catch (error) {
+    console.error("Error getting user downloads:", error);
+    return [];
+  }
+}
+
+/**
+ * Calculate the total storage used by downloads
+ * @returns Promise resolving to the total size in bytes
+ */
+export async function getTotalStorageUsed(): Promise<number> {
+  try {
+    const allDownloads = await getAllDownloads();
+    return allDownloads.reduce((total, download) => {
+      return total + (download.size_bytes || 0);
+    }, 0);
+  } catch (error) {
+    console.error("Error calculating storage used:", error);
+    return 0;
   }
 }

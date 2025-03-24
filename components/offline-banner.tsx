@@ -1,18 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { WifiOff, Wifi } from "lucide-react";
+import { WifiOff, Wifi, Download } from "lucide-react";
 import { useOffline } from "@/hooks/use-offline";
+import { useDownloads } from "@/hooks/use-downloads";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 
-// Use dynamic import with no SSR to avoid hydration issues
 const OfflineBannerContent = ({
   isOnline,
   isVisible,
+  downloadCount,
+  isDownloadsPage,
 }: {
   isOnline: boolean;
   isVisible: boolean;
+  downloadCount: number;
+  isDownloadsPage: boolean;
 }) => {
   return (
     <div
@@ -22,7 +28,7 @@ const OfflineBannerContent = ({
         isVisible ? "translate-y-0" : "-translate-y-full"
       )}
     >
-      <div className=" py-2 px-4">
+      <div className="py-2 px-4">
         <div className="flex items-center justify-center gap-2 text-white">
           {isOnline ? (
             <>
@@ -32,9 +38,27 @@ const OfflineBannerContent = ({
           ) : (
             <>
               <WifiOff className="h-4 w-4" />
-              <span>
-                You&apos;re currently offline. Some features may be limited.
-              </span>
+              {isDownloadsPage ? (
+                <span>
+                  You&apos;re offline. You can access your {downloadCount}{" "}
+                  downloaded items below.
+                </span>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span>You&apos;re offline.</span>
+                  {downloadCount > 0 ? (
+                    <Link 
+                      href="/downloads" 
+                      className="flex items-center gap-1 underline hover:text-white/90"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Access your {downloadCount} downloaded items</span>
+                    </Link>
+                  ) : (
+                    <span>Download content to access it offline.</span>
+                  )}
+                </div>
+              )}
             </>
           )}
         </div>
@@ -45,8 +69,12 @@ const OfflineBannerContent = ({
 
 function OfflineBannerWithHook() {
   const { isOnline } = useOffline();
+  const { downloadCount } = useDownloads();
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  const isDownloadsPage = pathname === "/downloads";
 
   // Handle visibility with animation
   useEffect(() => {
@@ -70,7 +98,14 @@ function OfflineBannerWithHook() {
 
   if (!isVisible && isOnline) return null;
 
-  return <OfflineBannerContent isOnline={isOnline} isVisible={isVisible} />;
+  return (
+    <OfflineBannerContent 
+      isOnline={isOnline} 
+      isVisible={isVisible} 
+      downloadCount={downloadCount}
+      isDownloadsPage={isDownloadsPage}
+    />
+  );
 }
 
 // Export a dynamically imported version with no SSR
