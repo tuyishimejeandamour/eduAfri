@@ -54,7 +54,7 @@ const OfflineFeature = () => {
             <div className="relative order-1 md:order-2 animate-fade-in-right">
               <div className="rounded-3xl overflow-hidden shadow-2xl">
                 <Image
-                  src="/feature-1.jpg"
+                  src="/feature-1.png"
                   alt="Feature description 1"
                   width={800} // adjust as needed
                   height={500} // adjust as needed
@@ -92,7 +92,7 @@ const OfflineFeature = () => {
                     style={{ animationDelay: `${index * 0.2}s` }}
                   >
                     <Image
-                      src="/feature-2.jpg"
+                      src="/feature-2.png"
                       alt="Feature description 2"
                       width={800} // adjust as needed
                       height={500} // adjust as needed

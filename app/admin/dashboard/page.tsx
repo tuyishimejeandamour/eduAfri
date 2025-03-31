@@ -1,9 +1,9 @@
 import Link from "next/link"
 import { getServerSupabaseClient } from "@/lib/supabase"
 import { redirect } from "next/navigation"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { BookOpen, FileText, Plus, Settings, Users } from "lucide-react"
+import { FileText, Plus } from "lucide-react"
 
 export default async function AdminDashboardPage() {
   const supabase = await getServerSupabaseClient();

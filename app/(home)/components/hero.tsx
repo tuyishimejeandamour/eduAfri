@@ -36,7 +36,7 @@ const HeroSection = () => {
         <div className="md:w-1/2 relative mt-8 md:mt-0 z-10 animate-fade-in-right">
           <div className="relative rounded-3xl overflow-hidden shadow-xl">
             <Image
-              src="/hero-image.jpg"
+              src="/home.png"
               alt="Hero"
               width={1200}
               height={600}

@@ -9,13 +9,13 @@ const FeaturedCourses = () => {
       id: 1,
       title: "Web Development",
       description: "Learn full-stack web development",
-      image: "/web-dev.jpg",
+      image: "/web-dev.png",
     },
     {
       id: 2,
       title: "Data Science",
       description: "Master data analysis and machine learning",
-      image: "/data-science.jpg",
+      image: "/data-science.png",
     },
     // Add more courses as needed
   ];
