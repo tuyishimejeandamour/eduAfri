@@ -18,7 +18,7 @@ export function AuthForm() {
   const [username, setUsername] = useState("")
   const [offlineMode, setOfflineMode] = useState(false)
   const { signIn, signUp, loading } = useAuth()
-  const { offlineSignIn, offlineSignUp, isOfflineAuthenticated } = useOfflineAuth()
+  const { offlineSignIn, offlineSignUp } = useOfflineAuth()
   const { isOnline } = useOffline()
   
   // Check online status when component mounts

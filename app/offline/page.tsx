@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { WifiOff, Home, RefreshCw } from "lucide-react";
 

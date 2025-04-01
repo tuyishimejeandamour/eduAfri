@@ -49,6 +49,11 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = request.nextUrl.pathname.startsWith('/auth')
   const isPublicRoute = ['/'].includes(request.nextUrl.pathname)
 
+  // Exclude static assets and API routes from middleware processing
+  if (request.nextUrl.pathname.startsWith('/_next/static') || request.nextUrl.pathname.startsWith('/api')) {
+    return response;
+  }
+
   if (!session && !isAuthRoute && !isPublicRoute) {
     // Redirect unauthenticated users to login page
     return NextResponse.redirect(new URL('/auth', request.url))

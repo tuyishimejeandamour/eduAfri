@@ -3,7 +3,7 @@ import { getServerSupabaseClient } from "@/lib/supabase"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Edit, Trash2, FileText, GraduationCap, Globe } from "lucide-react"
+import { Plus, Edit, Trash2, GraduationCap, Globe } from "lucide-react"
 import { deleteCourse } from "@/app/admin/actions"
 
 export default async function CoursesPage() {

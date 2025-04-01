@@ -13,7 +13,6 @@ import {
   AlertCircle 
 } from "lucide-react";
 import { toast } from "sonner";
-import { processActionQueue } from "@/lib/sync-service";
 import { getDownloadByContentId } from "@/lib/indexeddb";
 
 export function OfflineDetector() {

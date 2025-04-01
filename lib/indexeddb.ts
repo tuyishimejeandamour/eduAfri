@@ -29,7 +29,7 @@ export async function initDB(): Promise<IDBDatabase | null> {
   
   while (retryCount < maxRetries) {
     try {
-      return await new Promise((resolve, reject) => {
+      return await new Promise((resolve) => {
         const request = indexedDB.open(DB_NAME, DB_VERSION);
         
         request.onerror = (event) => {

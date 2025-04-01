@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, createContext, useContext } from "react";
-import { addItem, getItem, getAllItems, updateItem, deleteItem } from "./indexeddb";
+import { addItem, getItem, getAllItems, updateItem } from "./indexeddb";
 
 // Define the store name for offline users
 const STORE_NAME = 'offline_users';
