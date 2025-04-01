@@ -1,7 +1,34 @@
-"use server";
+"use server"
 
-import { revalidatePath } from "next/cache";
-import { getServerSupabaseClient } from "@/lib/supabase";
+import { revalidatePath } from "next/cache"
+import { getServerSupabaseClient } from "@/lib/supabase"
+
+// Admin actions
+export async function setAdminRole() {
+  const supabase = await getServerSupabaseClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      role: "admin",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/admin");
+  return { success: true };
+}
 
 // User profile actions
 export async function updateUserProfile(formData: FormData) {

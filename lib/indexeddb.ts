@@ -401,8 +401,8 @@ export async function getDownloadCount(): Promise<number> {
     console.warn("IndexedDB not available, cannot get download count");
     return 0;
   }
-  const tx = db.transaction('downloads', 'readonly');
-  const store = tx.objectStore('downloads');
+  const tx = db.transaction(STORES.DOWNLOADS, 'readonly');
+  const store = tx.objectStore(STORES.DOWNLOADS);
   return new Promise<number>((resolve) => {
     const countRequest = store.count();
     countRequest.onsuccess = () => resolve(countRequest.result);

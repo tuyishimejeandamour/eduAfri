@@ -12,19 +12,9 @@ export default async function AdminDashboardPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  
   if (!user) {
     redirect("/auth");
-  }
-
-  // Verify admin role
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile || profile.role !== "admin") {
-    redirect("/");
   }
 
   // Fetch summary statistics

@@ -5,6 +5,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL PRIMARY KEY,
   username TEXT,
+  role TEXT DEFAULT 'user',
   language_preference TEXT DEFAULT 'en',
   download_preference TEXT DEFAULT 'wifi_only',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),

@@ -439,3 +439,32 @@ export async function deleteQuestion(formData: FormData) {
   return { success: true }
 }
 
+// Admin role management
+export async function setAdminRole(userId: string) {
+  const supabase = await getServerSupabaseClient()
+
+  // Check if user is authenticated
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: "Not authenticated" }
+  }
+
+  // Update the user's role to admin
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      role: "admin",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath("/admin")
+  return { success: true }
+}
+

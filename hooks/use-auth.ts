@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
@@ -14,23 +14,23 @@ export function useAuth() {
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
   const { isOnline } = useOffline();
-  const { isOfflineAuthenticated, offlineUser } = useOfflineAuth();
+  const { isOfflineAuthenticated, offlineUser, offlineSignOut } = useOfflineAuth();
 
   const { data: session } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
       if (!isOnline) return null;
-      const { data } = await supabase.auth.getSession();
-      return data.session;
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      return session;
     },
-    enabled: isOnline, // Only run this query when online
+    enabled: isOnline,
   });
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
       if (!isOnline || !session) {
-        // If offline or no session, return offline user profile if available
         if (isOfflineAuthenticated && offlineUser) {
           return {
             user: {
@@ -48,32 +48,31 @@ export function useAuth() {
         return null;
       }
       
-      // Otherwise fetch online profile
-      const response = await fetch("/api/auth/profile");
-      if (!response.ok) {
-        throw new Error("Failed to fetch profile");
-      }
-      const data = await response.json();
-      return data.data;
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error("User not found");
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (profileError) throw profileError;
+
+      return { user, profile };
     },
     enabled: !!session || isOfflineAuthenticated,
   });
 
   const signInMutation = useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => {
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       if (error) throw error;
-      return true;
+      return data;
     },
     onSuccess: () => {
       toast.success("You have been signed in successfully.");
@@ -91,15 +90,9 @@ export function useAuth() {
   });
 
   const signUpMutation = useMutation({
-    mutationFn: async ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => {
+    mutationFn: async ({ email, password }: { email: string; password: string }) => {
       setLoading(true);
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -107,7 +100,7 @@ export function useAuth() {
         },
       });
       if (error) throw error;
-      return true;
+      return data;
     },
     onSuccess: () => {
       toast.success("Check your email for the confirmation link.");
@@ -122,24 +115,19 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      // For online users, sign out from Supabase
       if (isOnline && session) {
-        const response = await fetch("/api/auth/logout", {
-          method: "POST",
-        });
-        if (!response.ok) {
-          throw new Error("Failed to log out");
-        }
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+      } else if (!isOnline) {
+        await offlineSignOut();
       }
-      
-      // For offline users, we'll rely on the OfflineAuthProvider to handle logout
       return true;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["session"] });
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.clear();
       router.push("/");
       router.refresh();
+      toast.success("You have been logged out successfully.");
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to log out");
@@ -152,17 +140,15 @@ export function useAuth() {
         throw new Error("You need to be online to update your profile");
       }
       
-      const response = await fetch("/api/auth/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(profileData),
-      });
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to update profile");
-      }
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error("User not found");
+
+      const { error } = await supabase
+        .from("profiles")
+        .update(profileData)
+        .eq("id", user.id);
+
+      if (error) throw error;
       return true;
     },
     onSuccess: () => {
@@ -174,8 +160,7 @@ export function useAuth() {
     },
   });
 
-  // In offline mode, we'll consider the user authenticated by default
-  const isAuthenticated = isOnline ? !!session : true;
+  const isAuthenticated = isOnline ? !!session : isOfflineAuthenticated;
 
   return {
     session,

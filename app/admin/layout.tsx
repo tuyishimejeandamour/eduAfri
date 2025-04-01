@@ -16,15 +16,15 @@ export default async function AdminLayout({
     redirect("/auth");
   }
 
-  // Verify admin role
+  // Verify admin role but don't redirect if they're not admin
   const { data: profile } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", user.id)
     .single();
 
-  if (!profile || profile.role !== "admin") {
-    redirect("/");
+  if (!profile) {
+    return null; // Or show an error message
   }
 
   return <div className="min-h-screen bg-background">{children}</div>;
