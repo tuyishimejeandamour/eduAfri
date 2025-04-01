@@ -137,5 +137,208 @@
       "offlineSuccessMessage": "Akaunti ya nje ya mtandao imetengenezwa kwa mafanikio",
       "failureMessage": "Imeshindwa kutengeneza akaunti ya nje ya mtandao. Barua pepe inaweza kuwa tayari inatumika."
     }
+  },
+  "navigation": {
+    "toggleMenu": "Geuza Menyu",
+    "dashboard": "Dashibodi",
+    "courses": "Kozi",
+    "search": "Tafuta",
+    "downloads": "Vipakuliwa",
+    "profile": "Wasifu"
+  },
+  "footer": {
+    "about": "Kuhusu",
+    "press": "Vyombo vya Habari",
+    "blog": "Blogu",
+    "careers": "Kazi",
+    "support": "Msaada",
+    "terms": "Masharti",
+    "privacy": "Faragha"
+  },
+  "dashboard": {
+    "welcomeBack": "Karibu tena",
+    "yourLearningJourney": "Endelea na safari yako ya kujifunza na EduAfri",
+    "inProgress": "Zinaendelea",
+    "coursesInProgress": "Kozi zinazoendela",
+    "completed": "Zilizokamilika",
+    "completedCourses": "Kozi zilizokamilika",
+    "downloaded": "Zimepakuliwa",
+    "itemsAvailableOffline": "Vipengee vinapatikana nje ya mtandao",
+    "language": "Lugha",
+    "currentLanguage": "Lugha ya sasa",
+    "continueLearningSectionTitle": "Endelea Kujifunza",
+    "continueLearningSectionDesc": "Endelea kutoka ulipoishia",
+    "viewButton": "Tazama",
+    "continueButton": "Endelea",
+    "noCourseInProgress": "Hakuna kozi zinazoendela",
+    "browseCoursesButton": "Vinjari kozi",
+    "recommendedSectionTitle": "Inayopendekezwa Kwako",
+    "recommendedSectionDesc": "Kulingana na mapendeleo na maendeleo yako",
+    "noRecommendations": "Hakuna mapendekezo bado",
+    "browseAllCourses": "Vinjari Kozi Zote",
+    "loading": "Inapakia dashibodi..."
+  },
+  "courses": {
+    "title": "Maudhui ya Elimu",
+    "description": "Vinjari na upakue kozi, masomo, na majaribio",
+    "coursesTab": "Kozi",
+    "lessonsTab": "Masomo",
+    "quizzesTab": "Majaribio",
+    "viewCourse": "Tazama Kozi",
+    "viewLesson": "Tazama Somo",
+    "takeQuiz": "Fanya Jaribio",
+    "noCourses": "Hakuna kozi zinazopatikana",
+    "noLessons": "Hakuna masomo yanayopatikana",
+    "noQuizzes": "Hakuna majaribio yanayopatikana",
+    "lesson": "Somo",
+    "quiz": "Jaribio"
+  },
+  "downloads": {
+    "title": "Vipakuliwa",
+    "description": "Fikia maudhui yako nje ya mtandao wakati wowote, popote",
+    "loading": "Inapakia vipakuliwa...",
+    "downloaded": "Imepakuliwa",
+    "size": "Ukubwa",
+    "offline": {
+      "mode": "Hali ya Nje ya Mtandao",
+      "online": "Mtandaoni"
+    },
+    "storage": {
+      "title": "Matumizi ya Hifadhi",
+      "description": "vipengee vinatumia",
+      "used": "kati ya MB 100 zilizotumika"
+    },
+    "contentTypes": {
+      "title": "Aina za Maudhui",
+      "description": "Mgawanyo wa maudhui yako yaliyopakuliwa",
+      "courses": "Kozi",
+      "lessons": "Masomo",
+      "quizzes": "Majaribio"
+    },
+    "sync": {
+      "title": "Hali ya Usawazishaji",
+      "description": "Vipakuliwa vyako vimesawazishwa na viko tayari kwa matumizi nje ya mtandao",
+      "online": "Tayari kusawazisha mabadiliko",
+      "offline": "Usawazishaji haupatikani nje ya mtandao",
+      "lastSynced": "Mara ya mwisho kusawazisha",
+      "notSyncedYet": "Haijasawazishwa bado",
+      "syncWhenOnline": "Maudhui yako yatasawazishwa kiotomatiki unapokuwa mtandaoni tena"
+    },
+    "tabs": {
+      "all": "Vyote",
+      "courses": "Kozi",
+      "lessons": "Masomo",
+      "quizzes": "Majaribio"
+    },
+    "empty": {
+      "all": "Hakuna maudhui yaliyopakuliwa",
+      "courses": "Hakuna kozi zilizopakuliwa",
+      "lessons": "Hakuna masomo yaliyopakuliwa",
+      "quizzes": "Hakuna majaribio yaliyopakuliwa",
+      "browseButton": "Vinjari Maudhui"
+    },
+    "actions": {
+      "view": "Tazama",
+      "remove": "Ondoa",
+      "clearAll": "Futa Vipakuliwa Vyote",
+      "download": "Pakua"
+    },
+    "messages": {
+      "needOnlineToRemove": "Unahitaji kuwa mtandaoni kuondoa vipakuliwa",
+      "downloadRemoved": "Kipakuliwa kimeondolewa kwa mafanikio",
+      "errorRemoving": "Imeshindwa kuondoa kipakuliwa"
+    }
+  },
+  "profile": {
+    "title": "Mipangilio ya Wasifu",
+    "description": "Dhibiti mapendeleo ya akaunti yako",
+    "actions": {
+      "title": "Vitendo vya Akaunti",
+      "description": "Dhibiti mipangilio ya akaunti yako",
+      "clearDownloads": {
+        "title": "Futa Maudhui Yaliyopakuliwa",
+        "description": "Ondoa maudhui yote yaliyopakuliwa ili kuongeza nafasi",
+        "button": "Futa"
+      },
+      "syncData": {
+        "title": "Sawazisha Maudhui",
+        "description": "Sawazisha maendeleo yako na upakue maudhui mapya",
+        "button": "Sawazisha",
+        "syncing": "Inasawazisha..."
+      }
+    },
+    "preferences": {
+      "language": "Lugha",
+      "downloadPreference": "Mapendeleo ya Kupakua",
+      "wifiOnly": "Pakua kwenye Wi-Fi pekee",
+      "anyNetwork": "Pakua kwenye mtandao wowote"
+    },
+    "saveButton": "Hifadhi Mapendeleo",
+    "logoutButton": "Toka"
+  },
+  "search": {
+    "title": "Tafuta Maudhui",
+    "description": "Tafuta kozi, masomo, na majaribio",
+    "inputPlaceholder": "Tafuta kozi, masomo, na majaribio...",
+    "noResults": "Hakuna matokeo yaliyopatikana kwa",
+    "tryDifferent": "Jaribu maneno tofauti au vinjari maudhui yote",
+    "browseAll": "Vinjari Maudhui Yote",
+    "popularSearches": "Utafutaji Maarufu",
+    "browseBySubject": "Vinjari kwa Somo",
+    "subjects": {
+      "mathematics": {
+        "title": "Hisabati",
+        "description": "Aljebra, Jiometri, Kalkulasi, na zaidi"
+      },
+      "science": {
+        "title": "Sayansi",
+        "description": "Fizikia, Kemia, Biolojia, na zaidi"
+      },
+      "programming": {
+        "title": "Programu",
+        "description": "Ujenzi wa Tovuti, Simu na Programu"
+      }
+    }
+  },
+  "quiz": {
+    "title": "Jaribio",
+    "questionNumber": "Swali {number}",
+    "previous": "Nyuma",
+    "next": "Mbele",
+    "finish": "Maliza Jaribio",
+    "results": "Matokeo ya Jaribio",
+    "scoreText": "Alama yako: {score}%",
+    "correctAnswer": "Sahihi!",
+    "incorrectAnswer": "Siyo sahihi. Jibu sahihi lilikuwa: {correct}",
+    "explanation": "Maelezo",
+    "backToCourses": "Rudi kwenye Kozi",
+    "notFound": "Jaribio halipatikani",
+    "questionCounter": "Swali {current} kati ya {total}"
+  },
+  "content": {
+    "loading": "Inapakia maudhui...",
+    "offlineUnavailable": "Maudhui Hayapatikani Nje ya Mtandao",
+    "offlineDescription": "Maudhui haya hayajapakuliwa kwa matumizi ya nje ya mtandao.",
+    "goToDownloads": "Nenda kwa Vipakuliwa",
+    "yourProgress": "Maendeleo Yako",
+    "complete": "kamili",
+    "offlineMode": "Hali ya Nje ya Mtandao",
+    "refreshing": "Inasasisha...",
+    "refresh": "Sasisha",
+    "refreshSuccess": "Maudhui yamesasishwa",
+    "refreshDescription": "Inaonyesha maudhui ya hivi karibuni kutoka kwa seva.",
+    "refreshError": "Imeshindwa kusasisha maudhui",
+    "refreshOfflineError": "Uko nje ya mtandao",
+    "refreshOfflineDescription": "Haiwezekani kusasisha maudhui wakati wa hali ya nje ya mtandao.",
+    "downloaded": "Imepakuliwa",
+    "download": "Pakua",
+    "courseLessons": "Masomo ya Kozi",
+    "view": "Tazama",
+    "quizInstructions": "Maagizo ya Jaribio",
+    "quizDescription": "Jaribio hili lina maswali {count}. Jibu maswali yote ili kukamilisha jaribio.",
+    "startQuiz": "Anza Jaribio",
+    "continueLearn": "Endelea Kujifunza",
+    "startLearn": "Anza Kujifunza",
+    "completed": "Imekamilika"
   }
 }

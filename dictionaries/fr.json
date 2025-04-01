@@ -137,5 +137,208 @@
       "offlineSuccessMessage": "Compte hors ligne créé avec succès",
       "failureMessage": "Échec de la création du compte hors ligne. L'email est peut-être déjà utilisé."
     }
+  },
+  "navigation": {
+    "toggleMenu": "Basculer le menu",
+    "dashboard": "Tableau de bord",
+    "courses": "Cours",
+    "search": "Rechercher",
+    "downloads": "Téléchargements",
+    "profile": "Profil"
+  },
+  "footer": {
+    "about": "À propos",
+    "press": "Presse",
+    "blog": "Blog",
+    "careers": "Carrières",
+    "support": "Support",
+    "terms": "Conditions",
+    "privacy": "Confidentialité"
+  },
+  "dashboard": {
+    "welcomeBack": "Bon retour",
+    "yourLearningJourney": "Continuez votre parcours d'apprentissage avec EduAfri",
+    "inProgress": "En cours",
+    "coursesInProgress": "Cours en cours",
+    "completed": "Terminés",
+    "completedCourses": "Cours terminés",
+    "downloaded": "Téléchargés",
+    "itemsAvailableOffline": "Éléments disponibles hors ligne",
+    "language": "Langue",
+    "currentLanguage": "Langue actuelle",
+    "continueLearningSectionTitle": "Continuer l'apprentissage",
+    "continueLearningSectionDesc": "Reprenez où vous vous êtes arrêté",
+    "viewButton": "Voir",
+    "continueButton": "Continuer",
+    "noCourseInProgress": "Aucun cours en cours",
+    "browseCoursesButton": "Parcourir les cours",
+    "recommendedSectionTitle": "Recommandé pour vous",
+    "recommendedSectionDesc": "Basé sur vos intérêts et votre progression",
+    "noRecommendations": "Pas encore de recommandations",
+    "browseAllCourses": "Parcourir tous les cours",
+    "loading": "Chargement du tableau de bord..."
+  },
+  "courses": {
+    "title": "Contenu éducatif",
+    "description": "Parcourez et téléchargez des cours, des leçons et des quiz",
+    "coursesTab": "Cours",
+    "lessonsTab": "Leçons",
+    "quizzesTab": "Quiz",
+    "viewCourse": "Voir le cours",
+    "viewLesson": "Voir la leçon",
+    "takeQuiz": "Faire le quiz",
+    "noCourses": "Aucun cours disponible",
+    "noLessons": "Aucune leçon disponible",
+    "noQuizzes": "Aucun quiz disponible",
+    "lesson": "Leçon",
+    "quiz": "Quiz"
+  },
+  "downloads": {
+    "title": "Téléchargements",
+    "description": "Accédez à votre contenu hors ligne n'importe quand, n'importe où",
+    "loading": "Chargement des téléchargements...",
+    "downloaded": "Téléchargé le",
+    "size": "Taille",
+    "offline": {
+      "mode": "Mode hors ligne",
+      "online": "En ligne"
+    },
+    "storage": {
+      "title": "Utilisation du stockage",
+      "description": "éléments utilisant",
+      "used": "sur 100 Mo utilisés"
+    },
+    "contentTypes": {
+      "title": "Types de contenu",
+      "description": "Répartition de votre contenu téléchargé",
+      "courses": "Cours",
+      "lessons": "Leçons",
+      "quizzes": "Quiz"
+    },
+    "sync": {
+      "title": "État de la synchronisation",
+      "description": "Vos téléchargements sont synchronisés et prêts pour une utilisation hors ligne",
+      "online": "Prêt à synchroniser les changements",
+      "offline": "Synchronisation indisponible hors ligne",
+      "lastSynced": "Dernière synchronisation",
+      "notSyncedYet": "Pas encore synchronisé",
+      "syncWhenOnline": "Votre contenu se synchronisera automatiquement lorsque vous serez de nouveau en ligne"
+    },
+    "tabs": {
+      "all": "Tout",
+      "courses": "Cours",
+      "lessons": "Leçons",
+      "quizzes": "Quiz"
+    },
+    "empty": {
+      "all": "Aucun contenu téléchargé",
+      "courses": "Aucun cours téléchargé",
+      "lessons": "Aucune leçon téléchargée",
+      "quizzes": "Aucun quiz téléchargé",
+      "browseButton": "Parcourir le contenu"
+    },
+    "actions": {
+      "view": "Voir",
+      "remove": "Supprimer",
+      "clearAll": "Effacer tous les téléchargements",
+      "download": "Télécharger"
+    },
+    "messages": {
+      "needOnlineToRemove": "Vous devez être en ligne pour supprimer les téléchargements",
+      "downloadRemoved": "Téléchargement supprimé avec succès",
+      "errorRemoving": "Échec de la suppression du téléchargement"
+    }
+  },
+  "profile": {
+    "title": "Paramètres du profil",
+    "description": "Gérez vos préférences de compte",
+    "actions": {
+      "title": "Actions du compte",
+      "description": "Gérez vos paramètres de compte",
+      "clearDownloads": {
+        "title": "Effacer le contenu téléchargé",
+        "description": "Supprimer tout le contenu téléchargé pour libérer de l'espace",
+        "button": "Effacer"
+      },
+      "syncData": {
+        "title": "Synchroniser le contenu",
+        "description": "Synchronisez votre progression et téléchargez du nouveau contenu",
+        "button": "Synchroniser",
+        "syncing": "Synchronisation..."
+      }
+    },
+    "preferences": {
+      "language": "Langue",
+      "downloadPreference": "Préférence de téléchargement",
+      "wifiOnly": "Télécharger uniquement en Wi-Fi",
+      "anyNetwork": "Télécharger sur tout réseau"
+    },
+    "saveButton": "Enregistrer les préférences",
+    "logoutButton": "Se déconnecter"
+  },
+  "search": {
+    "title": "Rechercher du contenu",
+    "description": "Trouvez des cours, des leçons et des quiz",
+    "inputPlaceholder": "Rechercher des cours, des leçons et des quiz...",
+    "noResults": "Aucun résultat trouvé pour",
+    "tryDifferent": "Essayez des mots-clés différents ou parcourez tout le contenu",
+    "browseAll": "Parcourir tout le contenu",
+    "popularSearches": "Recherches populaires",
+    "browseBySubject": "Parcourir par matière",
+    "subjects": {
+      "mathematics": {
+        "title": "Mathématiques",
+        "description": "Algèbre, Géométrie, Calcul et plus"
+      },
+      "science": {
+        "title": "Science",
+        "description": "Physique, Chimie, Biologie et plus"
+      },
+      "programming": {
+        "title": "Programmation",
+        "description": "Développement Web, Mobile et Logiciel"
+      }
+    }
+  },
+  "quiz": {
+    "title": "Quiz",
+    "questionNumber": "Question {number}",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "finish": "Terminer le quiz",
+    "results": "Résultats du quiz",
+    "scoreText": "Votre score : {score}%",
+    "correctAnswer": "Correct !",
+    "incorrectAnswer": "Incorrect. La bonne réponse était : {correct}",
+    "explanation": "Explication",
+    "backToCourses": "Retour aux cours",
+    "notFound": "Quiz introuvable",
+    "questionCounter": "Question {current} sur {total}"
+  },
+  "content": {
+    "loading": "Chargement du contenu...",
+    "offlineUnavailable": "Contenu Indisponible Hors Ligne",
+    "offlineDescription": "Ce contenu n'a pas été téléchargé pour une utilisation hors ligne.",
+    "goToDownloads": "Aller aux Téléchargements",
+    "yourProgress": "Votre Progression",
+    "complete": "complet",
+    "offlineMode": "Mode Hors Ligne",
+    "refreshing": "Actualisation...",
+    "refresh": "Actualiser",
+    "refreshSuccess": "Contenu actualisé",
+    "refreshDescription": "Affichage du contenu le plus récent du serveur.",
+    "refreshError": "Impossible d'actualiser le contenu",
+    "refreshOfflineError": "Vous êtes hors ligne",
+    "refreshOfflineDescription": "Impossible d'actualiser le contenu en mode hors ligne.",
+    "downloaded": "Téléchargé",
+    "download": "Télécharger",
+    "courseLessons": "Leçons du cours",
+    "view": "Voir",
+    "quizInstructions": "Instructions du Quiz",
+    "quizDescription": "Ce quiz contient {count} questions. Répondez à toutes les questions pour terminer le quiz.",
+    "startQuiz": "Commencer le Quiz",
+    "continueLearn": "Continuer l'apprentissage",
+    "startLearn": "Commencer l'apprentissage",
+    "completed": "Terminé"
   }
 }

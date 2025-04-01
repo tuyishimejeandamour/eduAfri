@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerSupabaseClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
+import { getDictionary } from '@/get-dictionary';
 import {
   Card,
   CardContent,
@@ -12,8 +13,15 @@ import {
 import { Button } from "@/app/[lang]/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/[lang]/components/ui/tabs";
 import { Download, BookOpen, FileText, HelpCircle } from "lucide-react";
+import { Locale } from "@/i18n-config";
 
-export default async function CoursesPage() {
+export default async function CoursesPage({
+  params,
+}: {
+  params: Promise<{ lang: Locale }>;
+}) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
   const supabase = await getServerSupabaseClient();
 
   // Check if user is authenticated
@@ -58,13 +66,13 @@ export default async function CoursesPage() {
       <div className="space-y-6">
         <div className="flex flex-col space-y-2">
           <h1 className="text-3xl font-bold tracking-tight animate-fade-in">
-            Educational Content
+            {dict.courses.title}
           </h1>
           <p
             className="text-muted-foreground animate-fade-in"
             style={{ animationDelay: "0.1s" }}
           >
-            Browse and download courses, lessons, and quizzes
+            {dict.courses.description}
           </p>
         </div>
 
@@ -75,13 +83,13 @@ export default async function CoursesPage() {
         >
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="courses" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" /> Courses
+              <BookOpen className="h-4 w-4" /> {dict.courses.coursesTab}
             </TabsTrigger>
             <TabsTrigger value="lessons" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" /> Lessons
+              <FileText className="h-4 w-4" /> {dict.courses.lessonsTab}
             </TabsTrigger>
             <TabsTrigger value="quizzes" className="flex items-center gap-2">
-              <HelpCircle className="h-4 w-4" /> Quizzes
+              <HelpCircle className="h-4 w-4" /> {dict.courses.quizzesTab}
             </TabsTrigger>
           </TabsList>
 
@@ -108,7 +116,7 @@ export default async function CoursesPage() {
                     </CardContent>
                     <CardFooter className="flex justify-between">
                       <Link href={`/content/${course.id}`}>
-                        <Button variant="outline">View Course</Button>
+                        <Button variant="outline">{dict.courses.viewCourse}</Button>
                       </Link>
                       {downloadedIds.includes(course.id) ? (
                         <Button variant="ghost" size="icon" disabled>
@@ -130,7 +138,7 @@ export default async function CoursesPage() {
               ) : (
                 <div className="col-span-full flex flex-col items-center justify-center h-40 text-center">
                   <BookOpen className="h-10 w-10 text-muted-foreground mb-2" />
-                  <p className="text-muted-foreground">No courses available</p>
+                  <p className="text-muted-foreground">{dict.courses.noCourses}</p>
                 </div>
               )}
             </div>
@@ -148,7 +156,7 @@ export default async function CoursesPage() {
                     <CardHeader>
                       <CardTitle>{lesson.title}</CardTitle>
                       <CardDescription>
-                        Lesson • {lesson.language}
+                        {dict.courses.lesson} • {lesson.language}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -158,7 +166,7 @@ export default async function CoursesPage() {
                     </CardContent>
                     <CardFooter className="flex justify-between">
                       <Link href={`/content/${lesson.id}`}>
-                        <Button variant="outline">View Lesson</Button>
+                        <Button variant="outline">{dict.courses.viewLesson}</Button>
                       </Link>
                       {downloadedIds.includes(lesson.id) ? (
                         <Button variant="ghost" size="icon" disabled>
@@ -180,7 +188,7 @@ export default async function CoursesPage() {
               ) : (
                 <div className="col-span-full flex flex-col items-center justify-center h-40 text-center">
                   <FileText className="h-10 w-10 text-muted-foreground mb-2" />
-                  <p className="text-muted-foreground">No lessons available</p>
+                  <p className="text-muted-foreground">{dict.courses.noLessons}</p>
                 </div>
               )}
             </div>
@@ -197,7 +205,9 @@ export default async function CoursesPage() {
                   >
                     <CardHeader>
                       <CardTitle>{quiz.title}</CardTitle>
-                      <CardDescription>Quiz • {quiz.language}</CardDescription>
+                      <CardDescription>
+                        {dict.courses.quiz} • {quiz.language}
+                      </CardDescription>
                     </CardHeader>
                     <CardContent>
                       <p className="text-sm text-muted-foreground">
@@ -206,7 +216,7 @@ export default async function CoursesPage() {
                     </CardContent>
                     <CardFooter className="flex justify-between">
                       <Link href={`/content/${quiz.id}`}>
-                        <Button variant="outline">Take Quiz</Button>
+                        <Button variant="outline">{dict.courses.takeQuiz}</Button>
                       </Link>
                       {downloadedIds.includes(quiz.id) ? (
                         <Button variant="ghost" size="icon" disabled>
@@ -228,7 +238,7 @@ export default async function CoursesPage() {
               ) : (
                 <div className="col-span-full flex flex-col items-center justify-center h-40 text-center">
                   <HelpCircle className="h-10 w-10 text-muted-foreground mb-2" />
-                  <p className="text-muted-foreground">No quizzes available</p>
+                  <p className="text-muted-foreground">{dict.courses.noQuizzes}</p>
                 </div>
               )}
             </div>

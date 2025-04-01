@@ -137,5 +137,208 @@
       "offlineSuccessMessage": "Offline account created successfully",
       "failureMessage": "Failed to create offline account. Email may already be in use."
     }
+  },
+  "navigation": {
+    "toggleMenu": "Toggle Menu",
+    "dashboard": "Dashboard",
+    "courses": "Courses",
+    "search": "Search",
+    "downloads": "Downloads",
+    "profile": "Profile"
+  },
+  "footer": {
+    "about": "About",
+    "press": "Press",
+    "blog": "Blog",
+    "careers": "Careers",
+    "support": "Support",
+    "terms": "Terms",
+    "privacy": "Privacy"
+  },
+  "dashboard": {
+    "welcomeBack": "Welcome back",
+    "yourLearningJourney": "Continue your learning journey with EduAfri",
+    "inProgress": "In Progress",
+    "coursesInProgress": "Courses in progress",
+    "completed": "Completed",
+    "completedCourses": "Completed courses",
+    "downloaded": "Downloaded",
+    "itemsAvailableOffline": "Items available offline",
+    "language": "Language",
+    "currentLanguage": "Current language",
+    "continueLearningSectionTitle": "Continue Learning",
+    "continueLearningSectionDesc": "Pick up where you left off",
+    "viewButton": "View",
+    "continueButton": "Continue",
+    "noCourseInProgress": "No courses in progress",
+    "browseCoursesButton": "Browse courses",
+    "recommendedSectionTitle": "Recommended for You",
+    "recommendedSectionDesc": "Based on your interests and progress",
+    "noRecommendations": "No recommendations yet",
+    "browseAllCourses": "Browse All Courses",
+    "loading": "Loading dashboard..."
+  },
+  "courses": {
+    "title": "Educational Content",
+    "description": "Browse and download courses, lessons, and quizzes",
+    "coursesTab": "Courses",
+    "lessonsTab": "Lessons",
+    "quizzesTab": "Quizzes",
+    "viewCourse": "View Course",
+    "viewLesson": "View Lesson",
+    "takeQuiz": "Take Quiz",
+    "noCourses": "No courses available",
+    "noLessons": "No lessons available",
+    "noQuizzes": "No quizzes available",
+    "lesson": "Lesson",
+    "quiz": "Quiz"
+  },
+  "downloads": {
+    "title": "Downloads",
+    "description": "Access your content offline anytime, anywhere",
+    "loading": "Loading downloads...",
+    "downloaded": "Downloaded",
+    "size": "Size",
+    "offline": {
+      "mode": "Offline Mode",
+      "online": "Online"
+    },
+    "storage": {
+      "title": "Storage Usage",
+      "description": "items using",
+      "used": "of 100 MB used"
+    },
+    "contentTypes": {
+      "title": "Content Types",
+      "description": "Breakdown of your downloaded content",
+      "courses": "Courses",
+      "lessons": "Lessons",
+      "quizzes": "Quizzes"
+    },
+    "sync": {
+      "title": "Sync Status",
+      "description": "Your downloads are synced and ready for offline use",
+      "online": "Ready to sync when changes are made",
+      "offline": "Sync unavailable while offline",
+      "lastSynced": "Last synced",
+      "notSyncedYet": "Not synced yet",
+      "syncWhenOnline": "Your content will sync automatically when you're back online"
+    },
+    "tabs": {
+      "all": "All",
+      "courses": "Courses",
+      "lessons": "Lessons",
+      "quizzes": "Quizzes"
+    },
+    "empty": {
+      "all": "No downloaded content",
+      "courses": "No courses downloaded",
+      "lessons": "No lessons downloaded",
+      "quizzes": "No quizzes downloaded",
+      "browseButton": "Browse Content"
+    },
+    "actions": {
+      "view": "View",
+      "remove": "Remove",
+      "clearAll": "Clear All Downloads",
+      "download": "Download"
+    },
+    "messages": {
+      "needOnlineToRemove": "You need to be online to remove downloads",
+      "downloadRemoved": "Download removed successfully",
+      "errorRemoving": "Failed to remove download"
+    }
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "description": "Manage your account preferences",
+    "actions": {
+      "title": "Account Actions",
+      "description": "Manage your account settings",
+      "clearDownloads": {
+        "title": "Clear Downloaded Content",
+        "description": "Remove all downloaded content to free up space",
+        "button": "Clear"
+      },
+      "syncData": {
+        "title": "Sync Content",
+        "description": "Synchronize your progress and download new content",
+        "button": "Sync",
+        "syncing": "Syncing..."
+      }
+    },
+    "preferences": {
+      "language": "Language",
+      "downloadPreference": "Download Preference",
+      "wifiOnly": "Download on Wi-Fi only",
+      "anyNetwork": "Download on any network"
+    },
+    "saveButton": "Save Preferences",
+    "logoutButton": "Log Out"
+  },
+  "search": {
+    "title": "Search Content",
+    "description": "Find courses, lessons, and quizzes",
+    "inputPlaceholder": "Search courses, lessons, and quizzes...",
+    "noResults": "No results found for",
+    "tryDifferent": "Try different keywords or browse all content",
+    "browseAll": "Browse All Content",
+    "popularSearches": "Popular Searches",
+    "browseBySubject": "Browse by Subject",
+    "subjects": {
+      "mathematics": {
+        "title": "Mathematics",
+        "description": "Algebra, Geometry, Calculus, and more"
+      },
+      "science": {
+        "title": "Science",
+        "description": "Physics, Chemistry, Biology, and more"
+      },
+      "programming": {
+        "title": "Programming",
+        "description": "Web, Mobile, and Software Development"
+      }
+    }
+  },
+  "quiz": {
+    "title": "Quiz",
+    "questionNumber": "Question {number}",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Finish Quiz",
+    "results": "Quiz Results",
+    "scoreText": "Your score: {score}%",
+    "correctAnswer": "Correct!",
+    "incorrectAnswer": "Incorrect. The correct answer was: {correct}",
+    "explanation": "Explanation",
+    "backToCourses": "Back to Courses",
+    "notFound": "Quiz not found",
+    "questionCounter": "Question {current} of {total}"
+  },
+  "content": {
+    "loading": "Loading content...",
+    "offlineUnavailable": "Content Unavailable Offline",
+    "offlineDescription": "This content hasn't been downloaded for offline use.",
+    "goToDownloads": "Go to Downloads",
+    "yourProgress": "Your Progress",
+    "complete": "complete",
+    "offlineMode": "Offline Mode",
+    "refreshing": "Refreshing...",
+    "refresh": "Refresh",
+    "refreshSuccess": "Content refreshed",
+    "refreshDescription": "Showing latest content from the server.",
+    "refreshError": "Failed to refresh content",
+    "refreshOfflineError": "You're offline",
+    "refreshOfflineDescription": "Cannot refresh content while offline.",
+    "downloaded": "Downloaded",
+    "download": "Download",
+    "courseLessons": "Course Lessons",
+    "view": "View",
+    "quizInstructions": "Quiz Instructions",
+    "quizDescription": "This quiz contains {count} questions. Answer all questions to complete the quiz.",
+    "startQuiz": "Start Quiz",
+    "continueLearn": "Continue Learning",
+    "startLearn": "Start Learning",
+    "completed": "Completed"
   }
 }

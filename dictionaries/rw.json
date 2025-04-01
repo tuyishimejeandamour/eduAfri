@@ -137,5 +137,208 @@
       "offlineSuccessMessage": "Konti yawe yo gukoresha utari kuri interineti yaremwe neza",
       "failureMessage": "Kurema konti yo gukoresha utari kuri interineti byanze. Imeri ishobora kuba isanzwe ikoreshwa."
     }
+  },
+  "navigation": {
+    "toggleMenu": "Guhindura Menu",
+    "dashboard": "Ikibaho",
+    "courses": "Amasomo",
+    "search": "Gushaka",
+    "downloads": "Byakuwe",
+    "profile": "Umwirondoro"
+  },
+  "footer": {
+    "about": "Ibyerekeye",
+    "press": "Itangazamakuru",
+    "blog": "Blog",
+    "careers": "Akazi",
+    "support": "Ubufasha",
+    "terms": "Amategeko",
+    "privacy": "Ibanga"
+  },
+  "dashboard": {
+    "welcomeBack": "Murakaza neza",
+    "yourLearningJourney": "Komeza urugendo rwawe rwo kwiga na EduAfri",
+    "inProgress": "Birimo gukorwa",
+    "coursesInProgress": "Amasomo arimo gukorwa",
+    "completed": "Byarangiye",
+    "completedCourses": "Amasomo yarangiye",
+    "downloaded": "Byakuwe",
+    "itemsAvailableOffline": "Ibintu bihari offline",
+    "language": "Ururimi",
+    "currentLanguage": "Ururimi rukoresha",
+    "continueLearningSectionTitle": "Komeza Kwiga",
+    "continueLearningSectionDesc": "Komeza aho wari ugeze",
+    "viewButton": "Reba",
+    "continueButton": "Komeza",
+    "noCourseInProgress": "Nta masomo arimo gukorwa",
+    "browseCoursesButton": "Reba amasomo",
+    "recommendedSectionTitle": "Byagenewe",
+    "recommendedSectionDesc": "Bishingiye ku byo ukunda n'aho ugeze",
+    "noRecommendations": "Nta bitekerezo biriho",
+    "browseAllCourses": "Reba Amasomo Yose",
+    "loading": "Birimo gutangira ikibaho..."
+  },
+  "courses": {
+    "title": "Ibikubiyemo Inyigisho",
+    "description": "Reba kandi ukuremo amasomo, ibiganiro, n'ibibazo",
+    "coursesTab": "Amasomo",
+    "lessonsTab": "Ibiganiro",
+    "quizzesTab": "Ibibazo",
+    "viewCourse": "Reba Isomo",
+    "viewLesson": "Reba Ikiganiro",
+    "takeQuiz": "Kora Ibibazo",
+    "noCourses": "Nta masomo ahari",
+    "noLessons": "Nta biganiro bihari",
+    "noQuizzes": "Nta bibazo bihari",
+    "lesson": "Ikiganiro",
+    "quiz": "Ibibazo"
+  },
+  "downloads": {
+    "title": "Byakuwe",
+    "description": "Bona ibikubiyemo offline igihe cyose, aho ariho hose",
+    "loading": "Birimo gukura byakuwe...",
+    "downloaded": "Byakuwe",
+    "size": "Ingano",
+    "offline": {
+      "mode": "Mode ya Offline",
+      "online": "Online"
+    },
+    "storage": {
+      "title": "Imikoreshereze y'Ubwihugiko",
+      "description": "ibintu bikoresha",
+      "used": "kuri MB 100 zakoreshejwe"
+    },
+    "contentTypes": {
+      "title": "Ubwoko bw'Ibikubiyemo",
+      "description": "Igabanya ry'ibikubiyemo byawe byakuwe",
+      "courses": "Amasomo",
+      "lessons": "Ibiganiro",
+      "quizzes": "Ibibazo"
+    },
+    "sync": {
+      "title": "Imimerere ya Sync",
+      "description": "Ibyo wakuye byahurijwe hamwe kandi biteguye gukoreshwa offline",
+      "online": "Biteguye guhuza igihe hakorwa impinduka",
+      "offline": "Guhuza ntibishoboka offline",
+      "lastSynced": "Igihe cya nyuma byahujwe",
+      "notSyncedYet": "Ntabwo bihujwe",
+      "syncWhenOnline": "Ibikubiyemo byawe bizahurizwa hamwe mu buryo bwikora igihe uzaba online"
+    },
+    "tabs": {
+      "all": "Byose",
+      "courses": "Amasomo",
+      "lessons": "Ibiganiro",
+      "quizzes": "Ibibazo"
+    },
+    "empty": {
+      "all": "Nta bikubiyemo byakuwe",
+      "courses": "Nta masomo yakuwe",
+      "lessons": "Nta biganiro byakuwe",
+      "quizzes": "Nta bibazo byakuwe",
+      "browseButton": "Reba Ibikubiyemo"
+    },
+    "actions": {
+      "view": "Reba",
+      "remove": "Gukuraho",
+      "clearAll": "Gusiba Byose Byakuwe",
+      "download": "Gukura"
+    },
+    "messages": {
+      "needOnlineToRemove": "Ugomba kuba uri kuri interineti kugira ngo ukureho ibikuwe",
+      "downloadRemoved": "Ibyo wakuye byakuweho neza",
+      "errorRemoving": "Kwikura ibyo wakuye byanze"
+    }
+  },
+  "profile": {
+    "title": "Igenamiterere ry'Umwirondoro",
+    "description": "Gucunga ibyo ukunda ku konti yawe",
+    "actions": {
+      "title": "Ibikorwa bya Konti",
+      "description": "Gucunga igenamiterere rya konti yawe",
+      "clearDownloads": {
+        "title": "Gusiba Ibikubiyemo Byakuwe",
+        "description": "Kuraho ibikubiyemo byose byakuwe kugira ngo ubone umwanya",
+        "button": "Gusiba"
+      },
+      "syncData": {
+        "title": "Guhuza Ibikubiyemo",
+        "description": "Guhuza aho ugeze no gukura ibikubiyemo bishya",
+        "button": "Guhuza",
+        "syncing": "Birimo guhuza..."
+      }
+    },
+    "preferences": {
+      "language": "Ururimi",
+      "downloadPreference": "Ibyo Ukunda mu Gukura",
+      "wifiOnly": "Gukura kuri Wi-Fi gusa",
+      "anyNetwork": "Gukura kuri network yose"
+    },
+    "saveButton": "Kubika Ibyo Ukunda",
+    "logoutButton": "Gusohoka"
+  },
+  "search": {
+    "title": "Gushaka Ibikubiyemo",
+    "description": "Shakisha amasomo, ibiganiro, n'ibibazo",
+    "inputPlaceholder": "Shakisha amasomo, ibiganiro, n'ibibazo...",
+    "noResults": "Nta bisubizo byabonetse kuri",
+    "tryDifferent": "Gerageza amagambo atandukanye cyangwa urebe ibikubiyemo byose",
+    "browseAll": "Reba Ibikubiyemo Byose",
+    "popularSearches": "Ibishakishwa Cyane",
+    "browseBySubject": "Reba ukurikije Isomo",
+    "subjects": {
+      "mathematics": {
+        "title": "Imibare",
+        "description": "Aljebure, Geometrie, Calcul, n'ibindi"
+      },
+      "science": {
+        "title": "Ubumenyi",
+        "description": "Fizika, Kimiya, Bioloriya, n'ibindi"
+      },
+      "programming": {
+        "title": "Porogaramu",
+        "description": "Iterambere rya Web, Mobile na Software"
+      }
+    }
+  },
+  "quiz": {
+    "title": "Ibibazo",
+    "questionNumber": "Ikibazo {number}",
+    "previous": "Gusubira inyuma",
+    "next": "Komeza",
+    "finish": "Rangiza Ibibazo",
+    "results": "Ibisubizo by'Ibibazo",
+    "scoreText": "Amanota yawe: {score}%",
+    "correctAnswer": "Nibyo!",
+    "incorrectAnswer": "Sibyo. Igisubizo nyacyo cyari: {correct}",
+    "explanation": "Ibisobanuro",
+    "backToCourses": "Gusubira ku Masomo",
+    "notFound": "Ibibazo ntibirabonetse",
+    "questionCounter": "Ikibazo {current} kuri {total}"
+  },
+  "content": {
+    "loading": "Birimo gutangiza ibikubiyemo...",
+    "offlineUnavailable": "Ibikubiyemo Ntibiboneka Offline",
+    "offlineDescription": "Ibi bikubiyemo ntabwo byarakurwa kugira ngo bikoreshwe offline.",
+    "goToDownloads": "Jya ku Byakuwe",
+    "yourProgress": "Aho Ugeze",
+    "complete": "cyuzuye",
+    "offlineMode": "Uburyo bwa Offline",
+    "refreshing": "Gusahura...",
+    "refresh": "Sahura",
+    "refreshSuccess": "Ibikubiyemo byasahuwe",
+    "refreshDescription": "Kwerekana ibikubiyemo bishya biva kuri seriveri.",
+    "refreshError": "Gusahura ibikubiyemo byanze",
+    "refreshOfflineError": "Uri offline",
+    "refreshOfflineDescription": "Ntushobora gusahura ibikubiyemo mu buryo bwa offline.",
+    "downloaded": "Byakuwe",
+    "download": "Kuramo",
+    "courseLessons": "Amasomo ya Kozi",
+    "view": "Reba",
+    "quizInstructions": "Amabwiriza y'Ibibazo",
+    "quizDescription": "Ibi bibazo birimo ibibazo {count}. Subiza ibibazo byose kugira ngo urangize.",
+    "startQuiz": "Tangira Ibibazo",
+    "continueLearn": "Komeza Kwiga",
+    "startLearn": "Tangira Kwiga",
+    "completed": "Byarangiye"
   }
 }
