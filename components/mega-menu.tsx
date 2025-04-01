@@ -40,7 +40,7 @@ export function MegaMenu() {
         <div className=" py-8">
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <h3 className="font-semibold mb-4">Shop by</h3>
+              <h3 className="font-semibold mb-4">Sort by</h3>
               <ul className="space-y-2">
                 {courseCategories.map((link) => (
                   <li key={link.href}>

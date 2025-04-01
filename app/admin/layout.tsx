@@ -1,5 +1,8 @@
 import { getServerSupabaseClient } from "@/lib/supabase";
 import { redirect } from "next/navigation";
+import { AdminSidebar } from "./components/admin-sidebar";
+import { AdminHeader } from "./components/admin-header";
+import { Toaster } from "@/components/ui/sonner";
 
 export default async function AdminLayout({
   children,
@@ -27,5 +30,21 @@ export default async function AdminLayout({
     return null; // Or show an error message
   }
 
-  return <div className="min-h-screen bg-background">{children}</div>;
+  // Only users with admin role can access this section
+  if (profile.role !== "admin") {
+    redirect("/"); // Redirect non-admin users to the homepage
+  }
+
+  return (
+    <div className="flex w-full h-screen bg-background">
+      <AdminSidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <AdminHeader />
+        <main className="flex-1 overflow-y-auto p-6">
+          {children}
+        </main>
+      </div>
+      <Toaster />
+    </div>
+  );
 }

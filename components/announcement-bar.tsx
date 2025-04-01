@@ -5,9 +5,9 @@ import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const announcements = [
-  "Subscribe and save 20%",
-  "Free shipping in European Union over 100€",
-  "Save more on quantity 6+ refills 10% off",
+  "New Course: Introduction to Web Development",
+  "Enroll Now: English for Beginners",
+  "Coming Soon: Mathematics for grade 10",
 ]
 
 export function AnnouncementBar() {
