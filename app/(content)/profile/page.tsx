@@ -78,6 +78,11 @@ export default function ProfilePage() {
     });
   };
 
+  const handleLogout = () => {
+    logout();
+    router.push("/"); // Explicitly redirect to home page after logout
+  };
+
   return (
     <>
       <div className="space-y-6">
@@ -259,7 +264,7 @@ export default function ProfilePage() {
             <Button
               variant="destructive"
               className="w-full flex items-center gap-2"
-              onClick={() => logout()}
+              onClick={handleLogout}
             >
               <LogOut className="h-4 w-4" /> Sign Out
             </Button>

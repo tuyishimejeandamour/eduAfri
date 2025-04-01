@@ -61,7 +61,7 @@ const Navbar = () => {
             <span className="absolute top-0 right-0 h-2 w-2 bg-eduscape rounded-full"></span>
           </Button>
           <Button variant="outline" className="rounded-full">
-            Sign In
+          <Link href={"/auth"}>Sign in</Link>
           </Button>
           <Button
             asChild
