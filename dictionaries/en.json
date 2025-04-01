@@ -102,5 +102,40 @@
       },
       "startLearning": "Start learning today"
     }
+  },
+  "auth": {
+    "title": "EduAfri",
+    "description": "Access educational content offline across Africa",
+    "offlineMode": "Offline Mode",
+    "signIn": {
+      "tab": "Sign In",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "passwordLabel": "Password",
+      "useOnlineMode": "Try online sign in",
+      "useOfflineMode": "Use offline mode",
+      "button": "Sign In",
+      "buttonLoading": "Signing in...",
+      "buttonOffline": "Sign In Offline",
+      "successMessage": "Signed in successfully",
+      "offlineSuccessMessage": "Signed in offline successfully",
+      "failureMessage": "Offline sign in failed. Check your credentials or create an offline account."
+    },
+    "signUp": {
+      "tab": "Sign Up",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your.email@example.com",
+      "usernameLabel": "Username (Optional)",
+      "usernamePlaceholder": "Your name",
+      "passwordLabel": "Password",
+      "useOnlineMode": "Try online sign up",
+      "useOfflineMode": "Use offline mode",
+      "button": "Sign Up",
+      "buttonLoading": "Signing up...",
+      "buttonOffline": "Sign Up Offline",
+      "successMessage": "Check your email for the confirmation link.",
+      "offlineSuccessMessage": "Offline account created successfully",
+      "failureMessage": "Failed to create offline account. Email may already be in use."
+    }
   }
 }

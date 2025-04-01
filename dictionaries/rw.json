@@ -102,5 +102,40 @@
       },
       "startLearning": "Tangira kwiga none"
     }
+  },
+  "auth": {
+    "title": "EduAfri",
+    "description": "Bona inyigisho hanze ya interineti muri Afurika",
+    "offlineMode": "Uburyo bwo Gukora Utari kuri Interineti",
+    "signIn": {
+      "tab": "Injira",
+      "emailLabel": "Imeri",
+      "emailPlaceholder": "imeri.yawe@urugero.com",
+      "passwordLabel": "Ijambobanga",
+      "useOnlineMode": "Gerageza kwinjira uri kuri interineti",
+      "useOfflineMode": "Koresha uburyo bwo gukora utari kuri interineti",
+      "button": "Injira",
+      "buttonLoading": "Urimo kwinjira...",
+      "buttonOffline": "Injira Utari kuri Interineti",
+      "successMessage": "Winjiye neza",
+      "offlineSuccessMessage": "Winjiye neza utari kuri interineti",
+      "failureMessage": "Kwinjira utari kuri interineti byanze. Reba imyirondoro yawe cyangwa urebe konti nshya utari kuri interineti."
+    },
+    "signUp": {
+      "tab": "Iyandikishe",
+      "emailLabel": "Imeri",
+      "emailPlaceholder": "imeri.yawe@urugero.com",
+      "usernameLabel": "Izina ry'ukoresha (Si ngombwa)",
+      "usernamePlaceholder": "Izina ryawe",
+      "passwordLabel": "Ijambobanga",
+      "useOnlineMode": "Gerageza kwiyandikisha uri kuri interineti",
+      "useOfflineMode": "Koresha uburyo bwo gukora utari kuri interineti",
+      "button": "Iyandikishe",
+      "buttonLoading": "Urimo kwiyandikisha...",
+      "buttonOffline": "Iyandikishe Utari kuri Interineti",
+      "successMessage": "Reba imeri yawe kugira ngo ubone ihuza ryo kwemeza.",
+      "offlineSuccessMessage": "Konti yawe yo gukoresha utari kuri interineti yaremwe neza",
+      "failureMessage": "Kurema konti yo gukoresha utari kuri interineti byanze. Imeri ishobora kuba isanzwe ikoreshwa."
+    }
   }
 }

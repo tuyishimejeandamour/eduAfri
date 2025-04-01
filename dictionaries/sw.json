@@ -102,5 +102,40 @@
       },
       "startLearning": "Anza kujifunza leo"
     }
+  },
+  "auth": {
+    "title": "EduAfri",
+    "description": "Fikia maudhui ya elimu nje ya mtandao katika Afrika",
+    "offlineMode": "Hali ya Nje ya Mtandao",
+    "signIn": {
+      "tab": "Ingia",
+      "emailLabel": "Barua pepe",
+      "emailPlaceholder": "barua.yako@mfano.com",
+      "passwordLabel": "Nywila",
+      "useOnlineMode": "Jaribu kuingia mtandaoni",
+      "useOfflineMode": "Tumia hali ya nje ya mtandao",
+      "button": "Ingia",
+      "buttonLoading": "Inaingia...",
+      "buttonOffline": "Ingia Nje ya Mtandao",
+      "successMessage": "Umeingia kwa mafanikio",
+      "offlineSuccessMessage": "Umeingia nje ya mtandao kwa mafanikio",
+      "failureMessage": "Kuingia nje ya mtandao kumeshindwa. Angalia vitambulisho vyako au tengeneza akaunti mpya ya nje ya mtandao."
+    },
+    "signUp": {
+      "tab": "Jisajili",
+      "emailLabel": "Barua pepe",
+      "emailPlaceholder": "barua.yako@mfano.com",
+      "usernameLabel": "Jina la mtumiaji (Hiari)",
+      "usernamePlaceholder": "Jina lako",
+      "passwordLabel": "Nywila",
+      "useOnlineMode": "Jaribu kujisajili mtandaoni",
+      "useOfflineMode": "Tumia hali ya nje ya mtandao",
+      "button": "Jisajili",
+      "buttonLoading": "Inasajili...",
+      "buttonOffline": "Jisajili Nje ya Mtandao",
+      "successMessage": "Angalia barua pepe yako kwa kiungo cha kuthibitisha.",
+      "offlineSuccessMessage": "Akaunti ya nje ya mtandao imetengenezwa kwa mafanikio",
+      "failureMessage": "Imeshindwa kutengeneza akaunti ya nje ya mtandao. Barua pepe inaweza kuwa tayari inatumika."
+    }
   }
 }

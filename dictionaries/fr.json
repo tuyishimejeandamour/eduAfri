@@ -102,5 +102,40 @@
       },
       "startLearning": "Commencez à apprendre aujourd'hui"
     }
+  },
+  "auth": {
+    "title": "EduAfri",
+    "description": "Accédez au contenu éducatif hors ligne à travers l'Afrique",
+    "offlineMode": "Mode Hors Ligne",
+    "signIn": {
+      "tab": "Se Connecter",
+      "emailLabel": "Email",
+      "emailPlaceholder": "votre.email@exemple.com",
+      "passwordLabel": "Mot de passe",
+      "useOnlineMode": "Essayer la connexion en ligne",
+      "useOfflineMode": "Utiliser le mode hors ligne",
+      "button": "Se Connecter",
+      "buttonLoading": "Connexion en cours...",
+      "buttonOffline": "Se Connecter Hors Ligne",
+      "successMessage": "Connexion réussie",
+      "offlineSuccessMessage": "Connexion hors ligne réussie",
+      "failureMessage": "Échec de la connexion hors ligne. Vérifiez vos identifiants ou créez un compte hors ligne."
+    },
+    "signUp": {
+      "tab": "S'inscrire",
+      "emailLabel": "Email",
+      "emailPlaceholder": "votre.email@exemple.com",
+      "usernameLabel": "Nom d'utilisateur (Optionnel)",
+      "usernamePlaceholder": "Votre nom",
+      "passwordLabel": "Mot de passe",
+      "useOnlineMode": "Essayer l'inscription en ligne",
+      "useOfflineMode": "Utiliser le mode hors ligne",
+      "button": "S'inscrire",
+      "buttonLoading": "Inscription en cours...",
+      "buttonOffline": "S'inscrire Hors Ligne",
+      "successMessage": "Vérifiez votre email pour le lien de confirmation.",
+      "offlineSuccessMessage": "Compte hors ligne créé avec succès",
+      "failureMessage": "Échec de la création du compte hors ligne. L'email est peut-être déjà utilisé."
+    }
   }
 }
