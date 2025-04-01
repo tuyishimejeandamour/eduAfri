@@ -1,11 +1,18 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Bell, Menu, X } from "lucide-react";
 import { Button } from "@/app/[lang]/components/ui/button";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { type getDictionary } from "@/get-dictionary";
 
-const Navbar = () => {
+interface NavbarProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["home"]["navbar"];
+}
+
+const Navbar = ({ dictionary }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -34,7 +41,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <motion.div whileHover={{ scale: 1.1 }} className="text-2xl font-bold">
-          <Link href="/">EduAfri</Link>
+          <Link href="/">{dictionary.brand}</Link>
         </motion.div>
 
         {/* Desktop Navigation */}
@@ -44,14 +51,14 @@ const Navbar = () => {
             whileTap={{ scale: 0.95 }}
             className="px-4 py-2 text-gray-600 hover:text-gray-900"
           >
-            <Link href="/courses">Courses</Link>
+            <Link href="/courses">{dictionary.courses}</Link>
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="px-4 py-2 text-gray-600 hover:text-gray-900"
           >
-            <Link href="#features">Features</Link>
+            <Link href="#features">{dictionary.features}</Link>
           </motion.button>
         </nav>
 
@@ -61,13 +68,13 @@ const Navbar = () => {
             <span className="absolute top-0 right-0 h-2 w-2 bg-eduscape rounded-full"></span>
           </Button>
           <Button variant="outline" className="rounded-full">
-          <Link href={"/auth"}>Sign in</Link>
+          <Link href={"/auth"}>{dictionary.signIn}</Link>
           </Button>
           <Button
             asChild
             className="rounded-full bg-sidebar-accent-foreground hover:bg-accent-foreground"
           >
-            <Link href={"/auth"}>Join Now</Link>
+            <Link href={"/auth"}>{dictionary.joinNow}</Link>
           </Button>
         </div>
 
@@ -91,35 +98,35 @@ const Navbar = () => {
               className="text-eduscape-text hover:text-eduscape py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Courses
+              {dictionary.courses}
             </a>
             <a
               href="#features"
               className="text-eduscape-text hover:text-eduscape py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Features
+              {dictionary.features}
             </a>
             <a
               href="#testimonials"
               className="text-eduscape-text hover:text-eduscape py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Testimonials
+              {dictionary.testimonials}
             </a>
             <a
               href="#pricing"
               className="text-eduscape-text hover:text-eduscape py-2"
               onClick={() => setIsMenuOpen(false)}
             >
-              Pricing
+              {dictionary.pricing}
             </a>
             <div className="pt-4 flex flex-col space-y-3">
               <Button variant="outline" className="w-full rounded-full">
-                Sign In
+                {dictionary.signIn}
               </Button>
               <Button className="w-full rounded-full bg-eduscape hover:bg-eduscape-dark">
-                Join Now
+                {dictionary.joinNow}
               </Button>
             </div>
           </nav>

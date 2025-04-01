@@ -1,45 +1,48 @@
 import React from "react";
+import { type getDictionary } from "@/get-dictionary";
 
-const StatsSection = () => {
+interface StatsSectionProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["home"]["stats"];
+}
+
+const StatsSection = ({ dictionary }: StatsSectionProps) => {
   return (
     <section className="bg-white py-20">
       <div className="max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="bg-eduscape-light rounded-3xl p-8 md:p-12 animate-fade-in">
           <div className="mb-6">
             <span className="text-7xl md:text-8xl font-display font-bold text-eduscape">
-              95%
+              {dictionary.completionRate.percentage}
             </span>
           </div>
           <h3 className="text-xl md:text-2xl font-medium mb-4 text-eduscape-text">
-            Course Completion Rate
+            {dictionary.completionRate.title}
           </h3>
           <p className="text-eduscape-muted">
-            Our offline learning feature helps students complete courses even
-            with limited connectivity, resulting in industry-leading completion
-            rates.
+            {dictionary.completionRate.description}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard
-            number="500+"
-            label="Expert-Led Courses"
-            description="Courses crafted by industry professionals and academic experts"
+            number={dictionary.expertLed.number}
+            label={dictionary.expertLed.title}
+            description={dictionary.expertLed.description}
           />
           <StatCard
-            number="24/7"
-            label="Learning Access"
-            description="Download once, learn anytime, anywhere, even offline"
+            number={dictionary.learningAccess.number}
+            label={dictionary.learningAccess.title}
+            description={dictionary.learningAccess.description}
           />
           <StatCard
-            number="1.2M+"
-            label="Active Students"
-            description="Join our global community of lifelong learners"
+            number={dictionary.activeStudents.number}
+            label={dictionary.activeStudents.title}
+            description={dictionary.activeStudents.description}
           />
           <StatCard
-            number="98%"
-            label="Satisfaction Rate"
-            description="Consistently high ratings across all course categories"
+            number={dictionary.satisfactionRate.number}
+            label={dictionary.satisfactionRate.title}
+            description={dictionary.satisfactionRate.description}
           />
         </div>
       </div>

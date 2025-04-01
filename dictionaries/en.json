@@ -1,0 +1,106 @@
+{
+  "home": {
+    "hero": {
+      "pill": "Learn from anywhere",
+      "heading": "Explore the world of learning with us",
+      "description": "Discover expert-led courses in technology, business, arts, and more. Download and learn at your own pace, anywhere, anytime.",
+      "getStarted": "Get started",
+      "exploreCourses": "Explore courses",
+      "catalogHeading": "Explore our catalog of",
+      "catalogDescription": "500+ premium courses available offline",
+      "downloadCourses": "Download courses",
+      "learnOffline": "Learn offline, anywhere"
+    },
+    "navbar": {
+      "brand": "EduAfri",
+      "courses": "Courses",
+      "features": "Features",
+      "testimonials": "Testimonials",
+      "pricing": "Pricing",
+      "signIn": "Sign in",
+      "joinNow": "Join Now"
+    },
+    "featuredCourses": {
+      "heading": "Featured Courses",
+      "courses": {
+        "webDev": {
+          "title": "Web Development",
+          "description": "Learn full-stack web development"
+        },
+        "dataScience": {
+          "title": "Data Science",
+          "description": "Master data analysis and machine learning"
+        }
+      }
+    },
+    "stats": {
+      "completionRate": {
+        "percentage": "95%",
+        "title": "Course Completion Rate",
+        "description": "Our offline learning feature helps students complete courses even with limited connectivity, resulting in industry-leading completion rates."
+      },
+      "expertLed": {
+        "number": "500+",
+        "title": "Expert-Led Courses",
+        "description": "Courses crafted by industry professionals and academic experts"
+      },
+      "learningAccess": {
+        "number": "24/7",
+        "title": "Learning Access",
+        "description": "Download once, learn anytime, anywhere, even offline"
+      },
+      "activeStudents": {
+        "number": "1.2M+",
+        "title": "Active Students",
+        "description": "Join our global community of lifelong learners"
+      },
+      "satisfactionRate": {
+        "number": "98%",
+        "title": "Satisfaction Rate",
+        "description": "Consistently high ratings across all course categories"
+      }
+    },
+    "offlineFeature": {
+      "pill": "Learn anywhere",
+      "heading": "Hassle-free learning experience",
+      "description": "Download courses and continue learning offline. No interruptions, no excuses. Our app synchronizes your progress when you're back online.",
+      "downloadCourses": {
+        "title": "Download full courses",
+        "description": "Save videos, resources, and assessments for offline use"
+      },
+      "learnWithoutInternet": {
+        "title": "Learn without internet",
+        "description": "Continue your education regardless of connectivity"
+      },
+      "autoSync": {
+        "title": "Auto-sync progress",
+        "description": "Seamlessly synchronize your progress when back online"
+      },
+      "tryNow": "Try it now",
+      "offlineModeActive": "Offline Mode Active",
+      "learningContinues": "Learning continues uninterrupted"
+    },
+    "details": {
+      "pill": "Why choose us",
+      "heading": "We take care of all the details",
+      "description": "Our platform is designed with your learning journey in mind, providing all the tools and resources you need to succeed.",
+      "expertCurriculum": {
+        "title": "Expert-Crafted Curriculum",
+        "description": "Each course is meticulously designed by industry experts and academics to provide relevant, up-to-date knowledge and skills."
+      },
+      "offlineLearning": {
+        "title": "Complete Offline Learning",
+        "description": "Download entire courses including videos, quizzes, and resources to learn anywhere, even without internet connection."
+      },
+      "certifications": {
+        "title": "Recognized Certifications",
+        "description": "Earn industry-recognized certificates upon course completion to enhance your resume and professional credentials."
+      },
+      "support": {
+        "title": "24/7 Learning Support",
+        "description": "Our dedicated support team and community forums ensure you never get stuck, providing assistance whenever you need it."
+      },
+      "startLearning": "Start learning today"
+    }
+  }
+}

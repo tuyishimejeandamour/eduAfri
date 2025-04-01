@@ -6,23 +6,30 @@ import OfflineFeature from "./components/offilneFeature";
 import StatsSection from "./components/stats";
 import { SiteFooter } from "@/app/[lang]/components/site-footer";
 import React from "react";
+import { getDictionary } from '@/get-dictionary';
+import { Locale } from "@/i18n-config";
 
-export default function Home() {
- 
+export default async function Home({
+  params
+}: {
+  params: Promise<{ lang: Locale }>
+}) {
+  const { lang } = await params;
+  const dict = await getDictionary(lang);
 
   return (
     <div
       className="min-h-screen bg-white"
     >
-      <Navbar />
+      <Navbar dictionary={dict.home.navbar} />
       <main
         className="mt-8"
       >
-        <HeroSection />
-        <FeaturedCourses />
-        <StatsSection />
-        <OfflineFeature />
-        <DetailsSection />
+        <HeroSection dictionary={dict.home.hero} />
+        <FeaturedCourses dictionary={dict.home.featuredCourses} />
+        <StatsSection dictionary={dict.home.stats} />
+        <OfflineFeature dictionary={dict.home.offlineFeature} />
+        <DetailsSection dictionary={dict.home.details} />
       </main>
       <SiteFooter />
     </div>

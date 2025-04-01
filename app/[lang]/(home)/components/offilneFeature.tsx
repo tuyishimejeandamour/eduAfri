@@ -2,8 +2,13 @@ import React from "react";
 import { WifiOff, CheckCheck, Download } from "lucide-react";
 import { Button } from "@/app/[lang]/components/ui/button";
 import Image from "next/image";
+import { type getDictionary } from "@/get-dictionary";
 
-const OfflineFeature = () => {
+interface OfflineFeatureProps {
+  dictionary: Awaited<ReturnType<typeof getDictionary>>["home"]["offlineFeature"];
+}
+
+const OfflineFeature = ({ dictionary }: OfflineFeatureProps) => {
   return (
     <section
       id="features"
@@ -17,36 +22,34 @@ const OfflineFeature = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center relative z-10">
             {/* Left Column - Text Content */}
             <div className="animate-fade-in-left order-2 md:order-1">
-              <div className="pill">Learn anywhere</div>
+              <div className="pill">{dictionary.pill}</div>
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 text-eduscape-text">
-                Hassle-free learning experience
+                {dictionary.heading}
               </h2>
               <p className="text-eduscape-muted mb-8 max-w-md">
-                Download courses and continue learning offline. No
-                interruptions, no excuses. Our app synchronizes your progress
-                when you&apos;re back online.
+                {dictionary.description}
               </p>
 
               <div className="space-y-4 mb-8">
                 <FeatureItem
                   icon={<Download size={18} />}
-                  title="Download full courses"
-                  description="Save videos, resources, and assessments for offline use"
+                  title={dictionary.downloadCourses.title}
+                  description={dictionary.downloadCourses.description}
                 />
                 <FeatureItem
                   icon={<WifiOff size={18} />}
-                  title="Learn without internet"
-                  description="Continue your education regardless of connectivity"
+                  title={dictionary.learnWithoutInternet.title}
+                  description={dictionary.learnWithoutInternet.description}
                 />
                 <FeatureItem
                   icon={<CheckCheck size={18} />}
-                  title="Auto-sync progress"
-                  description="Seamlessly synchronize your progress when back online"
+                  title={dictionary.autoSync.title}
+                  description={dictionary.autoSync.description}
                 />
               </div>
 
               <Button className="rounded-full bg-eduscape hover:bg-eduscape-dark">
-                Try it now
+                {dictionary.tryNow}
               </Button>
             </div>
 
@@ -75,10 +78,10 @@ const OfflineFeature = () => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-eduscape-text">
-                    Offline Mode Active
+                    {dictionary.offlineModeActive}
                   </p>
                   <p className="text-xs text-eduscape-muted">
-                    Learning continues uninterrupted
+                    {dictionary.learningContinues}
                   </p>
                 </div>
               </div>

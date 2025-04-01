@@ -1,0 +1,106 @@
+{
+  "home": {
+    "hero": {
+      "pill": "Jifunze kutoka popote",
+      "heading": "Chunguza ulimwengu wa masomo pamoja nasi",
+      "description": "Gundua kozi zinazoongozwa na wataalamu katika teknolojia, biashara, sanaa, na zaidi. Pakua na kujifunza kwa kasi yako mwenyewe, popote, wakati wowote.",
+      "getStarted": "Anza sasa",
+      "exploreCourses": "Chunguza kozi",
+      "catalogHeading": "Chunguza katalogi yetu ya",
+      "catalogDescription": "Zaidi ya kozi bora 500 zinazopatikana bila mtandao",
+      "downloadCourses": "Pakua kozi",
+      "learnOffline": "Jifunze nje ya mtandao, popote"
+    },
+    "navbar": {
+      "brand": "EduAfri",
+      "courses": "Kozi",
+      "features": "Vipengele",
+      "testimonials": "Ushahidi",
+      "pricing": "Bei",
+      "signIn": "Ingia",
+      "joinNow": "Jiunge sasa"
+    },
+    "featuredCourses": {
+      "heading": "Kozi Zilizoangaziwa",
+      "courses": {
+        "webDev": {
+          "title": "Ujenzi wa Tovuti",
+          "description": "Jifunze ujenzi wa tovuti kamili"
+        },
+        "dataScience": {
+          "title": "Sayansi ya Data",
+          "description": "Kuwa mtaalamu wa uchambuzi wa data na kujifunza kwa mashine"
+        }
+      }
+    },
+    "stats": {
+      "completionRate": {
+        "percentage": "95%",
+        "title": "Kiwango cha Kukamilisha Kozi",
+        "description": "Kipengele chetu cha kujifunza nje ya mtandao kinasaidia wanafunzi kukamilisha kozi hata na muunganisho mdogo, na kusababisha viwango vya juu vya kukamilisha kozi."
+      },
+      "expertLed": {
+        "number": "500+",
+        "title": "Kozi Zinazoongozwa na Wataalamu",
+        "description": "Kozi zimeundwa na wataalamu wa sekta na wataalam wa kitaaluma"
+      },
+      "learningAccess": {
+        "number": "24/7",
+        "title": "Upatikanaji wa Kujifunza",
+        "description": "Pakua mara moja, jifunze wakati wowote, popote, hata bila mtandao"
+      },
+      "activeStudents": {
+        "number": "1.2M+",
+        "title": "Wanafunzi Wanaotumia",
+        "description": "Jiunge na jamii yetu ya kimataifa ya wanafunzi wa maisha"
+      },
+      "satisfactionRate": {
+        "number": "98%",
+        "title": "Kiwango cha Kuridhika",
+        "description": "Viwango vya juu mara kwa mara katika kategoria zote za kozi"
+      }
+    },
+    "offlineFeature": {
+      "pill": "Jifunze popote",
+      "heading": "Uzoefu wa kujifunza bila shida",
+      "description": "Pakua kozi na endelea kujifunza bila mtandao. Hakuna vikwazo, hakuna visingizio. Programu yetu inasawazisha maendeleo yako unapokuwa mtandaoni tena.",
+      "downloadCourses": {
+        "title": "Pakua kozi kamili",
+        "description": "Hifadhi video, rasilimali, na tathmini kwa matumizi ya nje ya mtandao"
+      },
+      "learnWithoutInternet": {
+        "title": "Jifunze bila intaneti",
+        "description": "Endelea na elimu yako bila kujali muunganisho"
+      },
+      "autoSync": {
+        "title": "Usawazishaji wa kiotomatiki",
+        "description": "Sawazisha maendeleo yako kwa urahisi unapokuwa mtandaoni tena"
+      },
+      "tryNow": "Jaribu sasa",
+      "offlineModeActive": "Hali ya Nje ya Mtandao Imewashwa",
+      "learningContinues": "Kujifunza kunaendelea bila kukatizwa"
+    },
+    "details": {
+      "pill": "Kwa nini uchague sisi",
+      "heading": "Tunashughulikia maelezo yote",
+      "description": "Jukwaa letu limeundwa kwa kuzingatia safari yako ya kujifunza, kutoa zana na rasilimali zote unazohitaji kufanikiwa.",
+      "expertCurriculum": {
+        "title": "Mtaala Uliotengenezwa na Wataalamu",
+        "description": "Kila kozi imetengenezwa kwa umakini na wataalamu wa tasnia na wasomi kutoa maarifa na ujuzi muhimu na wa kisasa."
+      },
+      "offlineLearning": {
+        "title": "Kujifunza Nje ya Mtandao Kamili",
+        "description": "Pakua kozi nzima ikiwa ni pamoja na video, maswali, na rasilimali ili kujifunza popote, hata bila muunganisho wa intaneti."
+      },
+      "certifications": {
+        "title": "Vyeti Vinavyotambuliwa",
+        "description": "Pata vyeti vinavyotambulika na tasnia baada ya kukamilisha kozi ili kuboresha wasifu wako na sifa za kitaaluma."
+      },
+      "support": {
+        "title": "Msaada wa Kujifunza 24/7",
+        "description": "Timu yetu ya msaada iliyojitolea na majukwaa ya jamii yanakuhakikishia kamwe hutakwama, kutoa msaada wakati wowote unaohitaji."
+      },
+      "startLearning": "Anza kujifunza leo"
+    }
+  }
+}

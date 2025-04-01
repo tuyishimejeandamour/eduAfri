@@ -1,0 +1,106 @@
+{
+  "home": {
+    "hero": {
+      "pill": "Apprenez partout",
+      "heading": "Explorez le monde de l'apprentissage avec nous",
+      "description": "Découvrez des cours dirigés par des experts en technologie, en affaires, en arts et plus encore. Téléchargez et apprenez à votre rythme, n'importe où, n'importe quand.",
+      "getStarted": "Commencer",
+      "exploreCourses": "Explorer les cours",
+      "catalogHeading": "Explorez notre catalogue de",
+      "catalogDescription": "Plus de 500 cours premium disponibles hors ligne",
+      "downloadCourses": "Télécharger des cours",
+      "learnOffline": "Apprenez hors ligne, partout"
+    },
+    "navbar": {
+      "brand": "EduAfri",
+      "courses": "Cours",
+      "features": "Fonctionnalités",
+      "testimonials": "Témoignages",
+      "pricing": "Tarifs",
+      "signIn": "Se connecter",
+      "joinNow": "Rejoindre maintenant"
+    },
+    "featuredCourses": {
+      "heading": "Cours en vedette",
+      "courses": {
+        "webDev": {
+          "title": "Développement Web",
+          "description": "Apprenez le développement web full-stack"
+        },
+        "dataScience": {
+          "title": "Science des Données",
+          "description": "Maîtrisez l'analyse de données et l'apprentissage automatique"
+        }
+      }
+    },
+    "stats": {
+      "completionRate": {
+        "percentage": "95%",
+        "title": "Taux d'achèvement des cours",
+        "description": "Notre fonctionnalité d'apprentissage hors ligne aide les étudiants à terminer les cours même avec une connectivité limitée, ce qui se traduit par des taux d'achèvement leaders de l'industrie."
+      },
+      "expertLed": {
+        "number": "500+",
+        "title": "Cours dirigés par des experts",
+        "description": "Cours créés par des professionnels de l'industrie et des experts académiques"
+      },
+      "learningAccess": {
+        "number": "24/7",
+        "title": "Accès à l'apprentissage",
+        "description": "Téléchargez une fois, apprenez n'importe quand, n'importe où, même hors ligne"
+      },
+      "activeStudents": {
+        "number": "1.2M+",
+        "title": "Étudiants actifs",
+        "description": "Rejoignez notre communauté mondiale d'apprenants permanents"
+      },
+      "satisfactionRate": {
+        "number": "98%",
+        "title": "Taux de satisfaction",
+        "description": "Notes constamment élevées dans toutes les catégories de cours"
+      }
+    },
+    "offlineFeature": {
+      "pill": "Apprenez partout",
+      "heading": "Expérience d'apprentissage sans tracas",
+      "description": "Téléchargez des cours et continuez à apprendre hors ligne. Pas d'interruptions, pas d'excuses. Notre application synchronise votre progression lorsque vous êtes de nouveau en ligne.",
+      "downloadCourses": {
+        "title": "Téléchargez des cours complets",
+        "description": "Enregistrez des vidéos, des ressources et des évaluations pour une utilisation hors ligne"
+      },
+      "learnWithoutInternet": {
+        "title": "Apprenez sans internet",
+        "description": "Poursuivez votre éducation quelle que soit la connectivité"
+      },
+      "autoSync": {
+        "title": "Synchronisation automatique de la progression",
+        "description": "Synchronisez facilement votre progression lorsque vous êtes de nouveau en ligne"
+      },
+      "tryNow": "Essayez maintenant",
+      "offlineModeActive": "Mode hors ligne actif",
+      "learningContinues": "L'apprentissage continue sans interruption"
+    },
+    "details": {
+      "pill": "Pourquoi nous choisir",
+      "heading": "Nous nous occupons de tous les détails",
+      "description": "Notre plateforme est conçue en pensant à votre parcours d'apprentissage, fournissant tous les outils et ressources dont vous avez besoin pour réussir.",
+      "expertCurriculum": {
+        "title": "Programme créé par des experts",
+        "description": "Chaque cours est méticuleusement conçu par des experts de l'industrie et des universitaires pour fournir des connaissances et des compétences pertinentes et à jour."
+      },
+      "offlineLearning": {
+        "title": "Apprentissage hors ligne complet",
+        "description": "Téléchargez des cours entiers, y compris des vidéos, des quiz et des ressources pour apprendre n'importe où, même sans connexion internet."
+      },
+      "certifications": {
+        "title": "Certifications reconnues",
+        "description": "Obtenez des certificats reconnus par l'industrie à la fin du cours pour améliorer votre CV et vos références professionnelles."
+      },
+      "support": {
+        "title": "Support d'apprentissage 24/7",
+        "description": "Notre équipe de support dédiée et nos forums communautaires vous assurent de ne jamais rester bloqué, en fournissant de l'aide quand vous en avez besoin."
+      },
+      "startLearning": "Commencez à apprendre aujourd'hui"
+    }
+  }
+}

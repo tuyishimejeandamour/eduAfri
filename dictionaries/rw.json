@@ -1,0 +1,106 @@
+{
+  "home": {
+    "hero": {
+      "pill": "Iga aho ariho hose",
+      "heading": "Gabirana twitegereze isi w'iyigishwa",
+      "description": "Menya amasomo y'impuguke mu ikoranabuhanga, mu bucuruzi, mu buhanzi n'ibindi. Kuramo kandi wige mu buryo bwakugenewe, aho ariho hose, igihe icyo aricyo cyose.",
+      "getStarted": "Tangira nonaha",
+      "exploreCourses": "Reba amasomo",
+      "catalogHeading": "Reba katalogi yacu ya",
+      "catalogDescription": "Amasomo y'irembo arenga 500 aboneka hanze ya interineti",
+      "downloadCourses": "Kuramo amasomo",
+      "learnOffline": "Iga utari kuri interineti, aho ariho hose"
+    },
+    "navbar": {
+      "brand": "EduAfri",
+      "courses": "Amasomo",
+      "features": "Ibiranga",
+      "testimonials": "Ibitekerezo",
+      "pricing": "Ibiciro",
+      "signIn": "Injira",
+      "joinNow": "Iyandikishe"
+    },
+    "featuredCourses": {
+      "heading": "Amasomo yatoranijwe",
+      "courses": {
+        "webDev": {
+          "title": "Gutunganya urubuga",
+          "description": "Iga gutunganya urubuga rw'interineti"
+        },
+        "dataScience": {
+          "title": "Ubumenyi bw'amakuru",
+          "description": "Menya gusesengura amakuru no gukorera kuri mashine"
+        }
+      }
+    },
+    "stats": {
+      "completionRate": {
+        "percentage": "95%",
+        "title": "Igipimo cyo kurangiza kw'amasomo",
+        "description": "Uburyo bwacu bwo kwiga utari kuri interineti bufasha abanyeshuri kurangiza amasomo nubwo bakoresha interineti idahagije, bikabyara igipimo cyiza cyo kurangiza amasomo."
+      },
+      "expertLed": {
+        "number": "500+",
+        "title": "Amasomo y'impuguke",
+        "description": "Amasomo yateguwe n'abanyamwuga mu nganda n'impuguke zo muri kaminuza"
+      },
+      "learningAccess": {
+        "number": "24/7",
+        "title": "Kubona inyigisho",
+        "description": "Kuramo rimwe, wige igihe icyo aricyo cyose, aho ariho hose, n'igihe utari kuri interineti"
+      },
+      "activeStudents": {
+        "number": "1.2M+",
+        "title": "Abanyeshuri bakoresha",
+        "description": "Winjire mu muryango wacu w'isi yose w'abiga burundu"
+      },
+      "satisfactionRate": {
+        "number": "98%",
+        "title": "Igipimo cy'uko abantu bashimishijwe",
+        "description": "Amanota meza ku buryo buhoraho mu byiciro byose by'amasomo"
+      }
+    },
+    "offlineFeature": {
+      "pill": "Iga aho ariho hose",
+      "heading": "Uburyo bwo kwiga nta ngorane",
+      "description": "Kuramo amasomo kandi ukomeze kwiga utari kuri interineti. Nta guhagarara, nta mpamvu. Porogaramu yacu ihuza aho wageze igihe wongera kuba kuri interineti.",
+      "downloadCourses": {
+        "title": "Kuramo amasomo yose",
+        "description": "Bika amashusho, ibikoresho n'isuzuma kugira ngo ubyifashishe utari kuri interineti"
+      },
+      "learnWithoutInternet": {
+        "title": "Iga nta interineti",
+        "description": "Komeza kwiga nubwo utafite interineti"
+      },
+      "autoSync": {
+        "title": "Guhuza byikora",
+        "description": "Ihuza byoroshye aho wageze igihe wongera kuba kuri interineti"
+      },
+      "tryNow": "Gerageza nonaha",
+      "offlineModeActive": "Uburyo bwo gukora utari kuri interineti burakora",
+      "learningContinues": "Inyigisho zikomeza nta hagarara"
+    },
+    "details": {
+      "pill": "Kuki ututoranya",
+      "heading": "Dufata iby'ingenzi byose",
+      "description": "Urubuga rwacu rwateguwe rwita ku rugendo rwawe rwo kwiga, rugufasha ibikoresho byose n'ibigendanye nawo kugira ngo ugere ku ntego.",
+      "expertCurriculum": {
+        "title": "Integanyanyigisho y'impuguke",
+        "description": "Buri somo ryateguwe neza n'impuguke mu nganda n'abarimu mu guhana ubumenyi n'ubushobozi byiza kandi bya vuba."
+      },
+      "offlineLearning": {
+        "title": "Kwiga utari kuri interineti yuzuye",
+        "description": "Kuramo amasomo yose harimo amashusho, ibibazo n'ibikoresho kugira ngo wige aho ariho hose, nubwo haba nta interineti."
+      },
+      "certifications": {
+        "title": "Ibyemezo Byizwe",
+        "description": "Bona impamyabushobozi zemewe mu nganda iyo urangije amasomo kugira ngo wongere urutonde rw'imirimo yawe n'impamyabumenyi y'umwuga."
+      },
+      "support": {
+        "title": "Ubufasha mu kwiga 24/7",
+        "description": "Itsinda ryacu rihoraho n'ingaga z'abanyamuryango bigufasha kutaguma mu bibazo, Bitanga ubufasha igihe ukeneye."
+      },
+      "startLearning": "Tangira kwiga none"
+    }
+  }
+}
