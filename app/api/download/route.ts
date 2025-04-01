@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getServerSupabaseClient } from "@/lib/supabase"
-import { markContentAsDownloaded } from "@/app/actions"
+import { markContentAsDownloaded } from "@/app/[lang]/actions"
 
 export async function POST(request: NextRequest) {
   const supabase = await getServerSupabaseClient()
