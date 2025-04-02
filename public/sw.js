@@ -2,16 +2,23 @@ const CACHE_NAME = 'eduafri-offline-v1';
 const OFFLINE_URL = '/offline';
 const DOWNLOADS_URL = '/downloads';
 const CONTENT_URL_PATTERN = '/content/';
+const SUPPORTED_LANGUAGES = ['en', 'fr', 'rw', 'sw'];
+const DEFAULT_LANGUAGE = 'en';
+
+// Helper function to create language path variants
+function createLanguagePathVariants(path) {
+  return SUPPORTED_LANGUAGES.map(lang => `/${lang}${path}`);
+}
 
 const PRECACHE_ASSETS = [
   '/',
-  '/offline',
-  '/downloads',
+  ...createLanguagePathVariants('/offline'),
+  ...createLanguagePathVariants('/downloads'),
   '/manifest.json',
   '/file.svg',
   '/globe.svg',
   '/window.svg',
-  CONTENT_URL_PATTERN,
+  ...SUPPORTED_LANGUAGES.map(lang => `/${lang}${CONTENT_URL_PATTERN}`),
 ];
 
 self.addEventListener('install', (event) => {
@@ -50,6 +57,11 @@ self.addEventListener('fetch', (event) => {
       const cache = await caches.open(CACHE_NAME);
       const isOnline = navigator.onLine;
 
+      // Extract language from URL if present
+      const urlPath = new URL(event.request.url).pathname;
+      const urlParts = urlPath.split('/').filter(Boolean);
+      const lang = SUPPORTED_LANGUAGES.includes(urlParts[0]) ? urlParts[0] : DEFAULT_LANGUAGE;
+      
       // Special handling for auth-related requests when offline
       if (!isOnline && event.request.url.includes('/api/auth/')) {
         // Return empty successful response for auth checks when offline
@@ -86,18 +98,18 @@ self.addEventListener('fetch', (event) => {
           }
           
           // If not found directly, try to find by content ID
-          const contentId = event.request.url.split('/').pop();
+          const contentId = urlParts[urlParts.indexOf('content') + 1];
           console.log('Looking for content with ID:', contentId);
           
-          const cachedContent = await findCachedContent(contentId);
+          const cachedContent = await findCachedContent(contentId, lang);
           if (cachedContent) {
             console.log('Found cached content through content ID');
             return cachedContent;
           }
           
-          // If we can't find the content, return the offline page
+          // If we can't find the content, return the offline page for the current language
           console.log('Content not found in cache, returning offline page');
-          return await cache.match(OFFLINE_URL);
+          return await cache.match(`/${lang}/offline`) || await cache.match(`/${DEFAULT_LANGUAGE}/offline`);
         }
       }
 
@@ -132,9 +144,15 @@ self.addEventListener('fetch', (event) => {
         if (event.request.mode === 'navigate') {
           // Check if this is a content view request
           if (event.request.url.includes(CONTENT_URL_PATTERN)) {
-            const contentId = event.request.url.split('/').pop();
-            // Try to find the content in cache
-            const cachedContent = await findCachedContent(contentId);
+            // Extract content ID from URL
+            const urlParts = new URL(event.request.url).pathname.split('/').filter(Boolean);
+            const contentIndex = urlParts.indexOf('content');
+            const contentId = contentIndex !== -1 && contentIndex + 1 < urlParts.length ? 
+                             urlParts[contentIndex + 1] : 
+                             urlParts[urlParts.length - 1];
+            
+            // Try to find the content in cache with the appropriate language
+            const cachedContent = await findCachedContent(contentId, lang);
             if (cachedContent) {
               return cachedContent;
             }
@@ -148,8 +166,9 @@ self.addEventListener('fetch', (event) => {
             }
           }
           
-          // For other pages, return the offline page
-          const offlineResponse = await cache.match(OFFLINE_URL);
+          // For other pages, return the language-specific offline page
+          const offlineResponse = await cache.match(`/${lang}/offline`) || 
+                                  await cache.match(`/${DEFAULT_LANGUAGE}/offline`);
           if (offlineResponse) {
             return offlineResponse;
           }
@@ -175,6 +194,7 @@ self.addEventListener('message', (event) => {
       (async () => {
         const cache = await caches.open(CACHE_NAME);
         const download = event.data.download;
+        const lang = event.data.lang || DEFAULT_LANGUAGE;
         
         // Add the content URL to cache if it exists
         if (download.url) {
@@ -186,13 +206,23 @@ self.addEventListener('message', (event) => {
           }
         }
         
-        // Explicitly cache the content page URL
+        // Explicitly cache the content page URL with language path
         if (download.content_id) {
           try {
-            const contentPageUrl = new URL(`/content/${download.content_id}`, self.location.origin).href;
+            // Cache for the current language
+            const contentPageUrl = new URL(`/${lang}/content/${download.content_id}`, self.location.origin).href;
             console.log('Caching content page URL:', contentPageUrl);
             const response = await fetch(contentPageUrl);
             await cache.put(contentPageUrl, response);
+            
+            // Also cache API responses for this content
+            const apiUrl = new URL(`/api/content/${download.content_id}`, self.location.origin).href;
+            try {
+              const apiResponse = await fetch(apiUrl);
+              await cache.put(apiUrl, apiResponse);
+            } catch (apiError) {
+              console.error('Failed to cache API response:', apiError);
+            }
           } catch (error) {
             console.error('Failed to cache content page:', error);
           }
@@ -279,22 +309,52 @@ self.addEventListener('message', (event) => {
 async function isDownloadedContent(url) {
   const cache = await caches.open(CACHE_NAME);
   const keys = await cache.keys();
-  return keys.some(request => request.url === url);
+  
+  // Direct URL match
+  if (keys.some(request => request.url === url)) {
+    return true;
+  }
+  
+  // Extract content ID if this is a content URL
+  const urlObj = new URL(url);
+  const urlParts = urlObj.pathname.split('/').filter(Boolean);
+  
+  // Check if this is a content URL with language prefix
+  const contentIndex = urlParts.indexOf('content');
+  if (contentIndex !== -1 && contentIndex + 1 < urlParts.length) {
+    const contentId = urlParts[contentIndex + 1];
+    
+    // Check if we have any cached URL for this content ID
+    return keys.some(request => request.url.includes(`/content/${contentId}`));
+  }
+  
+  return false;
 }
 
 // Helper function to find cached content by ID
-async function findCachedContent(contentId) {
+async function findCachedContent(contentId, lang = DEFAULT_LANGUAGE) {
   const cache = await caches.open(CACHE_NAME);
   const keys = await cache.keys();
   
-  // First try to match the exact content page URL
-  const contentPageUrl = new URL(`/content/${contentId}`, self.location.origin).href;
+  // Try to match with the provided language first
+  const contentPageUrl = new URL(`/${lang}/content/${contentId}`, self.location.origin).href;
   const exactMatch = await cache.match(contentPageUrl);
   if (exactMatch) {
     return exactMatch;
   }
   
-  // If no exact match, look for any cached request that includes the content ID
+  // If not found with provided language, try other languages
+  for (const language of SUPPORTED_LANGUAGES) {
+    if (language !== lang) {
+      const langContentUrl = new URL(`/${language}/content/${contentId}`, self.location.origin).href;
+      const langMatch = await cache.match(langContentUrl);
+      if (langMatch) {
+        return langMatch;
+      }
+    }
+  }
+  
+  // If no exact match with any language, look for any cached request that includes the content ID
   for (const request of keys) {
     if (request.url.includes(`/content/${contentId}`)) {
       return cache.match(request);

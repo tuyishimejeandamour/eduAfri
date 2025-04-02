@@ -154,11 +154,7 @@ export async function updateUserProgress(
     return { error: error.message };
   }
 
-  // Revalidate dashboard for all supported languages
-  const languages = ['en', 'fr', 'rw', 'sw'];
-  languages.forEach(lang => {
-    revalidatePath(`/${lang}/dashboard`);
-  });
+  revalidatePath("/dashboard");
   return { success: true };
 }
 
@@ -220,11 +216,7 @@ export async function removeDownloadedContent(contentId: string) {
     return { error: error.message };
   }
 
-  // Revalidate path for all supported languages
-  const languages = ['en', 'fr', 'rw', 'sw'];
-  languages.forEach(lang => {
-    revalidatePath(`/${lang}/downloads`);
-  });
+  revalidatePath("/downloads");
   return { success: true };
 }
 

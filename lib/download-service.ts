@@ -198,6 +198,18 @@ export async function downloadContent(
     };
     await saveDownload(download);
 
+    // Notify service worker to cache this content with proper language
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'CACHE_DOWNLOAD_CONTENT',
+        download: {
+          content_id: contentId,
+          assets: [],
+        },
+        lang: currentLanguage
+      });
+    }
+
     toast.success("Content downloaded successfully", {
       id: toastId,
       description: content.type === "course" 
