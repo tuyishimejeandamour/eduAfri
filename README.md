@@ -14,7 +14,7 @@ An educational platform built with Next.js and Supabase, featuring multilingual 
 
 ```bash
 git clone <repository-url>
-cd summartive
+cd eduafri
 ```
 
 ### 2. Install Dependencies
