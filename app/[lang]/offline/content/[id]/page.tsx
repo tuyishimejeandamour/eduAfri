@@ -168,6 +168,54 @@ export default function ContentPage() {
   const handleUpdateProgress = () => {
     const newProgress = (progress?.progress_percentage || 0) + 10;
     updateProgress(content.id, newProgress, newProgress >= 100);
+    
+    // If this is a course and there are lessons, navigate to the next unfinished lesson
+    if (content.type === "course" && lessons && lessons.length > 0) {
+      // Find the next lesson based on progress (this is a simple implementation)
+      // In a real app, you might want to track progress for each lesson separately
+      const progressPercentage = progress?.progress_percentage || 0;
+      const completionPercentPerLesson = 100 / lessons.length;
+      const currentLessonIndex = Math.min(
+        Math.floor(progressPercentage / completionPercentPerLesson),
+        lessons.length - 1
+      );
+      
+      // If we haven't completed all lessons, navigate to the current one
+      if (currentLessonIndex < lessons.length) {
+        const nextLesson = lessons[currentLessonIndex];
+        
+        // Use a timeout to ensure progress is saved before navigation
+        setTimeout(() => {
+          if (isOnline) {
+            router.push(`/content/${nextLesson.id}`);
+          } else {
+            router.push(`/offline/content/${nextLesson.id}`);
+          }
+        }, 300);
+        
+        toast.success("Navigating to next lesson", {
+          description: `Opening ${nextLesson.title}`
+        });
+      }
+    } else if (content.type === "lesson") {
+      // For lessons, navigate back to the parent course if completed
+      if (newProgress >= 100 && content.course_id) {
+        toast.success("Lesson completed", {
+          description: "Returning to course overview"
+        });
+        
+        setTimeout(() => {
+          if (isOnline) {
+            router.push(`/content/${content.course_id}`);
+          } else {
+            router.push(`/offline/content/${content.course_id}`);
+          }
+        }, 300);
+      }
+    } else if (content.type === "quiz" && questions && questions.length > 0) {
+      // For quizzes, navigate directly to the quiz interface
+      router.push(`/quiz/${content.id}`);
+    }
   };
 
   const handleDownload = () => {

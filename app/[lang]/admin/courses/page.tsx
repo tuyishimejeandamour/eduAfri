@@ -28,15 +28,10 @@ export default async function CoursesPage() {
     redirect("/");
   }
 
-  // Fetch courses with language details
+  // Fetch all courses with language details
   const { data: courses, error: coursesError } = await supabase
     .from("content")
-    .select(`
-      *,
-      languages (
-        name
-      )
-    `)
+    .select(`*`)
     .eq("type", "course")
     .order("created_at", { ascending: false });
 

@@ -27,6 +27,17 @@ export default async function AdminDashboardPage() {
     redirect("/auth");
   }
 
+  // Verify admin role
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.role !== "admin") {
+    redirect("/");
+  }
+
   // Fetch summary statistics
   const { count: courseCount } = await supabase
     .from("content")
@@ -46,7 +57,7 @@ export default async function AdminDashboardPage() {
     .from("profiles")
     .select("*", { count: "exact", head: true });
 
-  // Fetch latest courses
+  // Fetch latest courses - without filtering by created_by
   const { data: latestCourses } = await supabase
     .from("content")
     .select("*")

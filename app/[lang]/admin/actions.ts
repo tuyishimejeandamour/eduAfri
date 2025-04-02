@@ -26,7 +26,7 @@ export async function createCourse(formData: any) {
     return { error: "Unauthorized. Admin access required." }
   }
 
-  const { data, error } = await supabase.from("content").insert({
+  const courseData = {
     title: formData.title,
     description: formData.description,
     type: formData.type,
@@ -34,9 +34,13 @@ export async function createCourse(formData: any) {
     grade_level: formData.grade_level,
     language: formData.language,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    created_by: user.id,
-  }).select().single()
+    updated_at: new Date().toISOString()
+  };
+
+  const { data, error } = await supabase.from("content")
+    .insert(courseData)
+    .select()
+    .single();
 
   if (error) {
     console.error("Error creating course:", error)
@@ -44,6 +48,7 @@ export async function createCourse(formData: any) {
   }
 
   revalidatePath("/admin/courses")
+  revalidatePath("/admin/dashboard")
   return { success: true, id: data.id }
 }
 
@@ -196,7 +201,7 @@ export async function createQuiz(formData: any) {
     return { error: "Unauthorized. Admin access required." }
   }
 
-  const { data, error } = await supabase.from("content").insert({
+  const quizData = {
     title: formData.title,
     description: formData.description,
     type: formData.type,
@@ -204,8 +209,14 @@ export async function createQuiz(formData: any) {
     language: formData.language,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-    created_by: user.id,
-  }).select().single()
+    // Only include created_by if available and valid
+    ...(user?.id && { created_by: user.id }),
+  };
+
+  const { data, error } = await supabase.from("content")
+    .insert(quizData)
+    .select()
+    .single();
 
   if (error) {
     console.error("Error creating quiz:", error)
@@ -213,6 +224,7 @@ export async function createQuiz(formData: any) {
   }
 
   revalidatePath(`/admin/courses/${formData.course_id}/quizzes`)
+  revalidatePath(`/admin/dashboard`)
   return { success: true, id: data.id }
 }
 
