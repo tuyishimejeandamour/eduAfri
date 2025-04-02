@@ -154,7 +154,11 @@ export async function updateUserProgress(
     return { error: error.message };
   }
 
-  revalidatePath("/dashboard");
+  // Revalidate dashboard for all supported languages
+  const languages = ['en', 'fr', 'rw', 'sw'];
+  languages.forEach(lang => {
+    revalidatePath(`/${lang}/dashboard`);
+  });
   return { success: true };
 }
 
@@ -188,7 +192,11 @@ export async function markContentAsDownloaded(
     return { error: error.message };
   }
 
-  revalidatePath("/downloads");
+  // Assume a default language path for revalidation
+  const languages = ['en', 'fr', 'rw', 'sw'];
+  languages.forEach(lang => {
+    revalidatePath(`/${lang}/downloads`);
+  });
   return { success: true };
 }
 
@@ -212,7 +220,11 @@ export async function removeDownloadedContent(contentId: string) {
     return { error: error.message };
   }
 
-  revalidatePath("/downloads");
+  // Revalidate path for all supported languages
+  const languages = ['en', 'fr', 'rw', 'sw'];
+  languages.forEach(lang => {
+    revalidatePath(`/${lang}/downloads`);
+  });
   return { success: true };
 }
 

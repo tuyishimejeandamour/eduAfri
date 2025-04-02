@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useDownloads } from "@/hooks/use-downloads";
 import { useOffline } from "@/hooks/use-offline";
@@ -45,15 +45,27 @@ interface ProfileClientProps {
 
 export default function ProfileClient({ dictionary }: ProfileClientProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { session, profile, isAuthenticated, updateProfile, logout } = useAuth();
   const { clearDownloads } = useDownloads();
   const { isOnline, isSyncing, syncData } = useOffline();
+  const [authCheckComplete, setAuthCheckComplete] = useState(false);
+  
+  // Extract current locale from pathname
+  const pathLocale = pathname.split('/')[1];
+  const currentLocale = pathLocale && ['en', 'fr', 'rw', 'sw'].includes(pathLocale) ? pathLocale : 'rw';
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth");
-    }
-  }, [isAuthenticated, router]);
+    // Add a small delay to allow auth state to reestablish during language changes
+    const authCheckTimer = setTimeout(() => {
+      if (!isAuthenticated) {
+        router.push(`/${currentLocale}/auth`); // Preserve language when redirecting
+      }
+      setAuthCheckComplete(true);
+    }, 500); // 500ms delay should be sufficient
+    
+    return () => clearTimeout(authCheckTimer);
+  }, [isAuthenticated, router, currentLocale]);
 
   if (!profile) {
     return (
@@ -84,6 +96,24 @@ export default function ProfileClient({ dictionary }: ProfileClientProps) {
   const handleLogout = () => {
     logout();
     router.push("/"); // Explicitly redirect to home page after logout
+  };
+
+  const handleLanguageChange = (newLanguage: string) => {
+    // Update profile preference in the backend
+    updateProfile({
+      username: profile?.profile?.username || session?.user?.email?.split("@")[0] || "",
+      language_preference: newLanguage,
+      download_preference: profile?.profile?.download_preference || "wifi_only",
+    });
+
+    // Immediately redirect to the same page but with new language code
+    // Extract current path segments and replace the language code
+    const pathSegments = pathname.split('/');
+    if (pathSegments.length > 1) {
+      pathSegments[1] = newLanguage; // Replace the language segment
+      const newPath = pathSegments.join('/');
+      router.push(newPath);
+    }
   };
 
   return (
@@ -164,6 +194,7 @@ export default function ProfileClient({ dictionary }: ProfileClientProps) {
                   <Select
                     name="language_preference"
                     defaultValue={profile?.profile?.language_preference || "en"}
+                    onValueChange={handleLanguageChange}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select language" />

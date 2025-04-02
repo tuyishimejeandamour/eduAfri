@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, createContext, useContext } from "react";
-import { addItem, getItem, getAllItems, updateItem } from "./indexeddb";
+import { addItem, getItem, getAllItems, updateItem, initDB } from "./indexeddb";
 
 // Define the store name for offline users
 const STORE_NAME = 'offline_users';
@@ -62,7 +62,8 @@ export function OfflineAuthProvider({ children }: { children: React.ReactNode })
       }
     };
 
-    checkOfflineSession();
+    // Initialize the database first, then check session
+    initDB().then(() => checkOfflineSession());
   }, [isBrowser]);
 
   const offlineSignIn = async (email: string, password: string): Promise<boolean> => {
@@ -165,58 +166,3 @@ export function OfflineAuthProvider({ children }: { children: React.ReactNode })
 export function useOfflineAuth() {
   return useContext(OfflineAuthContext);
 }
-
-// Initialize the database with the offline_users store
-async function initOfflineUsersStore(): Promise<boolean> {
-  if (typeof window === 'undefined') return false;
-  
-  try {
-    // Open the database with a specific version to trigger onupgradeneeded
-    const request = indexedDB.open("eduafri-db", 2); // Increment version to trigger upgrade
-    
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
-      
-      // Create the offline_users store if it doesn't exist
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        console.log("Creating offline_users store");
-        db.createObjectStore(STORE_NAME, { keyPath: "id" });
-      }
-    };
-    
-    return new Promise((resolve) => {
-      request.onsuccess = () => {
-        console.log("Successfully initialized offline_users store");
-        const db = request.result;
-        db.close();
-        resolve(true);
-      };
-      
-      request.onerror = (event) => {
-        console.error("Error initializing offline_users store:", event);
-        resolve(false);
-      };
-    });
-  } catch (error) {
-    console.error("Error in initOfflineUsersStore:", error);
-    return false;
-  }
-}
-
-// Make sure offline_users store is created during DB initialization
-// This function is called when the module is imported
-(async () => {
-  if (typeof window !== 'undefined') {
-    try {
-      // First, ensure the store exists
-      const initialized = await initOfflineUsersStore();
-      
-      if (initialized) {
-        // Then try to get items
-        await getAllItems(STORE_NAME);
-      }
-    } catch (error) {
-      console.error('Error initializing offline users store:', error);
-    }
-  }
-})();

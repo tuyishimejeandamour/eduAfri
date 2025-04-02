@@ -9,7 +9,7 @@ const isIndexedDBAvailable = () => {
 
 // Database configuration
 const DB_NAME = "eduafri-db";
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORES = {
   CONTENT: "content",
   PROGRESS: "progress",

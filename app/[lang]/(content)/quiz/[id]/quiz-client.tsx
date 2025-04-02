@@ -26,7 +26,21 @@ export default function QuizPageClient({ dictionary }: QuizPageProps) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClient();
-  const { id } = useParams();
+  const { id, lang } = useParams();
+  
+  // Use the language parameter from the URL
+  const currentLanguage = Array.isArray(lang) ? lang[0] : (lang || 'en');
+
+  // Helper function to get the correct language for navigation
+  const getLanguagePath = () => {
+    // Extract language from path as backup
+    if (typeof window !== 'undefined') {
+      const pathParts = window.location.pathname.split('/');
+      const pathLang = pathParts[1];
+      return ['en', 'fr', 'rw', 'sw'].includes(pathLang) ? pathLang : currentLanguage;
+    }
+    return currentLanguage;
+  };
 
   useEffect(() => {
     async function fetchQuiz() {
@@ -51,7 +65,7 @@ export default function QuizPageClient({ dictionary }: QuizPageProps) {
       } catch (error) {
         console.error("Error fetching quiz:", error);
         toast.error("Failed to load quiz. Please try again.");
-        router.push("/courses");
+        router.push(`/${getLanguagePath()}/courses`);
       } finally {
         setLoading(false);
       }
@@ -102,7 +116,7 @@ export default function QuizPageClient({ dictionary }: QuizPageProps) {
   };
 
   const handleFinish = () => {
-    router.push("/courses");
+    router.push(`/${getLanguagePath()}/courses`);
   };
 
   if (loading) {
@@ -119,7 +133,7 @@ export default function QuizPageClient({ dictionary }: QuizPageProps) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center">
         <p className="text-lg mb-4">{dictionary.notFound}</p>
-        <Button onClick={() => router.push("/courses")}>
+        <Button onClick={() => router.push(`/${getLanguagePath()}/courses`)}>
           {dictionary.backToCourses}
         </Button>
       </div>

@@ -29,7 +29,7 @@ export default async function CoursesPage({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    redirect("/auth");
+    redirect(`/${lang}/auth`);
   }
 
   // Fetch courses
@@ -115,7 +115,7 @@ export default async function CoursesPage({
                       </p>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                      <Link href={`/content/${course.id}`}>
+                      <Link href={`/${lang}/content/${course.id}`}>
                         <Button variant="outline">{dict.courses.viewCourse}</Button>
                       </Link>
                       {downloadedIds.includes(course.id) ? (
@@ -124,7 +124,7 @@ export default async function CoursesPage({
                         </Button>
                       ) : (
                         <form
-                          action={`/api/download?id=${course.id}`}
+                          action={`/api/download?id=${course.id}&lang=${lang}`}
                           method="POST"
                         >
                           <Button variant="ghost" size="icon" type="submit">
@@ -165,7 +165,7 @@ export default async function CoursesPage({
                       </p>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                      <Link href={`/content/${lesson.id}`}>
+                      <Link href={`/${lang}/content/${lesson.id}`}>
                         <Button variant="outline">{dict.courses.viewLesson}</Button>
                       </Link>
                       {downloadedIds.includes(lesson.id) ? (
@@ -174,7 +174,7 @@ export default async function CoursesPage({
                         </Button>
                       ) : (
                         <form
-                          action={`/api/download?id=${lesson.id}`}
+                          action={`/api/download?id=${lesson.id}&lang=${lang}`}
                           method="POST"
                         >
                           <Button variant="ghost" size="icon" type="submit">
@@ -215,7 +215,7 @@ export default async function CoursesPage({
                       </p>
                     </CardContent>
                     <CardFooter className="flex justify-between">
-                      <Link href={`/content/${quiz.id}`}>
+                      <Link href={`/${lang}/content/${quiz.id}`}>
                         <Button variant="outline">{dict.courses.takeQuiz}</Button>
                       </Link>
                       {downloadedIds.includes(quiz.id) ? (
@@ -224,7 +224,7 @@ export default async function CoursesPage({
                         </Button>
                       ) : (
                         <form
-                          action={`/api/download?id=${quiz.id}`}
+                          action={`/api/download?id=${quiz.id}&lang=${lang}`}
                           method="POST"
                         >
                           <Button variant="ghost" size="icon" type="submit">

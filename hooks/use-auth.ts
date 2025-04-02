@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import { useOfflineAuth } from "@/lib/offline-auth";
@@ -10,12 +10,23 @@ import { toast } from "sonner";
 
 export function useAuth() {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
   const { isOnline } = useOffline();
   const { isOfflineAuthenticated, offlineUser, offlineSignOut } = useOfflineAuth();
+  
+  // Extract current locale from pathname
+  const currentLocale = pathname.split('/')[1];
 
+  // Check if the extracted locale is valid (could be 'en', 'fr', 'rw', or 'sw')
+  const isValidLocale = ['en', 'fr', 'rw', 'sw'].includes(currentLocale);
+
+  // Use the current locale or fallback to default
+  const locale = isValidLocale ? currentLocale : 'rw';
+
+  // Rest of your code remains unchanged
   const { data: session } = useQuery({
     queryKey: ["session"],
     queryFn: async () => {
@@ -78,7 +89,7 @@ export function useAuth() {
       toast.success("You have been signed in successfully.");
       queryClient.invalidateQueries({ queryKey: ["session"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
-      router.push("/dashboard");
+      router.push(`/${locale}/dashboard`);
       router.refresh();
     },
     onError: (error: Error) => {
@@ -96,7 +107,7 @@ export function useAuth() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/${locale}/auth/callback`,
         },
       });
       if (error) throw error;
@@ -125,7 +136,7 @@ export function useAuth() {
     },
     onSuccess: () => {
       queryClient.clear();
-      router.push("/");
+      router.push(`/${locale}`); // Preserve locale when redirecting to home
       router.refresh();
       toast.success("You have been logged out successfully.");
     },
@@ -175,5 +186,6 @@ export function useAuth() {
     logout: () => logoutMutation.mutate(),
     updateProfile: (profileData: any) =>
       updateProfileMutation.mutate(profileData),
+    currentLocale: locale, // Expose the current locale
   };
 }

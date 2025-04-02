@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useAuth } from "@/hooks/use-auth"
 import { useOfflineAuth } from "@/lib/offline-auth"
 import { useOffline } from "@/hooks/use-offline"
+import { usePathname } from "next/navigation"
 import { Button } from "@/app/[lang]/components/ui/button"
 import { Input } from "@/app/[lang]/components/ui/input"
 import { Label } from "@/app/[lang]/components/ui/label"
@@ -22,9 +23,14 @@ export function AuthForm({ dictionary }: AuthFormProps) {
   const [password, setPassword] = useState("")
   const [username, setUsername] = useState("")
   const [offlineMode, setOfflineMode] = useState(false)
-  const { signIn, signUp, loading } = useAuth()
+  const { signIn, signUp, loading, currentLocale } = useAuth()
   const { offlineSignIn, offlineSignUp } = useOfflineAuth()
   const { isOnline } = useOffline()
+  const pathname = usePathname()
+  
+  // Extract current locale from pathname as fallback
+  const pathLocale = pathname.split('/')[1];
+  const locale = currentLocale || ((['en', 'fr', 'rw', 'sw'].includes(pathLocale)) ? pathLocale : 'rw');
   
   // Check online status when component mounts
   useEffect(() => {
@@ -39,7 +45,7 @@ export function AuthForm({ dictionary }: AuthFormProps) {
       const success = await offlineSignIn(email, password)
       if (success) {
         toast.success(dictionary.signIn.offlineSuccessMessage)
-        window.location.href = "/dashboard" // Redirect to dashboard
+        window.location.href = `/${locale}/dashboard` // Redirect to dashboard with locale preserved
       } else {
         toast.error(dictionary.signIn.failureMessage)
       }
@@ -57,7 +63,7 @@ export function AuthForm({ dictionary }: AuthFormProps) {
       const success = await offlineSignUp(email, password, username)
       if (success) {
         toast.success(dictionary.signUp.offlineSuccessMessage)
-        window.location.href = "/dashboard" // Redirect to dashboard
+        window.location.href = `/${locale}/dashboard` // Redirect to dashboard with locale preserved
       } else {
         toast.error(dictionary.signUp.failureMessage)
       }

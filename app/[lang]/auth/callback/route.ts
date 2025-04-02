@@ -11,6 +11,11 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code)
   }
 
-  return NextResponse.redirect(new URL('/dashboard', request.url))
+  // Extract language from the URL path
+  const pathParts = requestUrl.pathname.split('/')
+  const lang = pathParts[1] // This will be the language code from the [lang] directory
+  
+  // Redirect to dashboard with the same language
+  return NextResponse.redirect(new URL(`/${lang}/dashboard`, request.url))
 }
 

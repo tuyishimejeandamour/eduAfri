@@ -37,7 +37,7 @@ export default function ContentClient({
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, currentLocale } = useAuth();
   const { isOnline } = useOffline();
   const { useContentDetail, updateProgress, downloadContent } = useContent();
   const { data, isLoading, refetch } = useContentDetail(id);
@@ -48,10 +48,20 @@ export default function ContentClient({
 
   // Only redirect to auth if online and not authenticated
   useEffect(() => {
-    if (!isAuthenticated && isOnline) {
-      router.push("/auth");
-    }
-  }, [isAuthenticated, router, isOnline]);
+    // Extract language from path manually as backup
+    const pathParts = window.location.pathname.split('/');
+    const pathLocale = pathParts[1];
+    const locale = currentLocale || 
+      (pathLocale && ['en', 'fr', 'rw', 'sw'].includes(pathLocale) ? pathLocale : 'rw');
+    
+    const authCheckTimer = setTimeout(() => {
+      if (!isAuthenticated && isOnline) {
+        router.push(`/${locale}/auth`); // Preserve language when redirecting
+      }
+    }, 500); // Add delay to give auth time to establish during language changes
+    
+    return () => clearTimeout(authCheckTimer);
+  }, [isAuthenticated, router, isOnline, currentLocale]);
 
   // Check if content is downloaded and load offline content when offline
   useEffect(() => {

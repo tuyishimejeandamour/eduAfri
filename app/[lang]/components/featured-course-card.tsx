@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Badge } from "@/app/[lang]/components/ui/badge"
 import { Card, CardContent } from "@/app/[lang]/components/ui/card"
 import { cn } from "@/lib/utils"
+import Image from "next/image"
 
 interface FeaturedCourseCardProps {
   title: string
@@ -37,9 +38,10 @@ export function FeaturedCourseCard({
         <CardContent className="p-0">
           <div className="aspect-[4/3] overflow-hidden bg-muted">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={image || "/placeholder.svg"}
               alt={title}
+              layout="fill"
               className="h-full w-full object-cover transition-transform group-hover:scale-105"
             />
           </div>

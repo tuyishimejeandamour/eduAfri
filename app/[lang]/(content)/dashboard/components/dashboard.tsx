@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { useProgress } from "@/hooks/use-progress";
 import { useContent } from "@/hooks/use-content";
@@ -25,20 +25,32 @@ interface DashboardProps {
 
 export default function PersonalDashboard({ dictionary }: DashboardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const { session, profile, isAuthenticated } = useAuth();
   const { progress, isLoading: progressLoading } = useProgress();
   const { downloads } = useDownloads();
+  const [authCheckComplete, setAuthCheckComplete] = useState(false);
   const { data: recommendedCourses, isLoading: coursesLoading } =
     useContent().useContentList({
       type: "course",
       limit: "4",
     });
+    
+  // Extract current locale from pathname
+  const pathLocale = pathname.split('/')[1];
+  const currentLocale = pathLocale && ['en', 'fr', 'rw', 'sw'].includes(pathLocale) ? pathLocale : 'rw';
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/auth");
-    }
-  }, [isAuthenticated, router]);
+    // Add a small delay to allow auth state to reestablish during language changes
+    const authCheckTimer = setTimeout(() => {
+      if (!isAuthenticated) {
+        router.push(`/${currentLocale}/auth`); // Preserve language when redirecting
+      }
+      setAuthCheckComplete(true);
+    }, 500); // 500ms delay should be sufficient
+    
+    return () => clearTimeout(authCheckTimer);
+  }, [isAuthenticated, router, currentLocale]);
 
   if (!profile || progressLoading || coursesLoading) {
     return (
@@ -172,8 +184,8 @@ export default function PersonalDashboard({ dictionary }: DashboardProps) {
                         {item.content?.title}
                       </p>
                       <p className="text-xs sm:text-sm text-muted-foreground">
-                        {item.type.charAt(0).toUpperCase() + item.type.slice(1)}{" "}
-                        • {item.language}
+                        {item.type ? (item.type.charAt(0).toUpperCase() + item.type.slice(1)) : "Content"}{" "}
+                        • {item.language || ""}
                       </p>
                       <div className="progress-bar mt-2">
                         <div
@@ -240,8 +252,8 @@ export default function PersonalDashboard({ dictionary }: DashboardProps) {
                         {item.title}
                       </p>
                       <p className="text-xs sm:text-sm text-muted-foreground">
-                        {item.type.charAt(0).toUpperCase() + item.type.slice(1)}{" "}
-                        • {item.language}
+                        {item.type ? (item.type.charAt(0).toUpperCase() + item.type.slice(1)) : "Content"}{" "}
+                        • {item.language || ""}
                       </p>
                     </div>
                     <Link

@@ -12,6 +12,20 @@ import { saveContentForOffline } from "./offline-storage";
 import { toast } from "sonner";
 
 /**
+ * Helper function to get the current language from the URL
+ * @returns The current language code from the URL path
+ */
+function getCurrentLanguage(): string {
+  if (typeof window !== 'undefined') {
+    const pathParts = window.location.pathname.split('/');
+    // The language should be the first segment after the root
+    const pathLocale = pathParts[1];
+    return ['en', 'fr', 'rw', 'sw'].includes(pathLocale) ? pathLocale : 'en';
+  }
+  return 'en'; // Default to English
+}
+
+/**
  * Download content and store it in IndexedDB
  * @param contentId ID of the content to download
  * @param userId ID of the user downloading the content
@@ -34,8 +48,11 @@ export async function downloadContent(
     // Show a loading toast
     const toastId = toast.loading("Downloading content for offline use...");
 
-    // Fetch the content details
-    const contentResponse = await fetch(`/api/content/${contentId}`);
+    // Get the current language from the URL path
+    const currentLanguage = getCurrentLanguage();
+
+    // Fetch the content details with language in the URL
+    const contentResponse = await fetch(`/api/content/${contentId}?lang=${currentLanguage}`);
     if (!contentResponse.ok) {
       toast.error("Failed to download content", {
         id: toastId,
@@ -119,7 +136,7 @@ export async function downloadContent(
 
         // If the lesson has a quiz, download it too
         if (lesson.quiz_id) {
-          const quizResponse = await fetch(`/api/content/${lesson.quiz_id}`);
+          const quizResponse = await fetch(`/api/content/${lesson.quiz_id}?lang=${currentLanguage}`);
           if (quizResponse.ok) {
             const quizData = await quizResponse.json();
             const quiz = quizData.data.content;
@@ -191,6 +208,7 @@ export async function downloadContent(
     // For online users, sync with server
     if (!isOfflineUser) {
       try {
+        // Use the current language in API calls
         const response = await fetch("/api/downloads", {
           method: "POST",
           headers: {

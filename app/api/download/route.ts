@@ -18,6 +18,9 @@ export async function POST(request: NextRequest) {
   if (!contentId) {
     return NextResponse.json({ error: "Content ID is required" }, { status: 400 })
   }
+  
+  // Get language from query params
+  const lang = request.nextUrl.searchParams.get("lang") || "en"
 
   // Fetch content
   const { data: content, error } = await supabase.from("content").select("*").eq("id", contentId).single()
@@ -49,6 +52,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: result.error }, { status: 500 })
   }
 
-  return NextResponse.redirect(new URL("/downloads", request.url))
+  return NextResponse.redirect(new URL(`/${lang}/downloads`, request.url))
 }
 
